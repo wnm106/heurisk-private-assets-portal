@@ -1,0 +1,135 @@
+# Heurisk Platform Rules for Private Assets Portal
+
+This is a Heurisk app. All code must follow Heurisk's platform conventions.
+
+## App Identity
+- **App ID**: 149578be-1e3b-43a2-ba05-77a8ab5342c5
+- **Tenant ID**: 722ff48c-02c9-42a9-9d3b-69811bc46c59
+- **App Name**: Private Assets Portal
+
+## Critical Rules
+
+### 1. Data Access — NEVER Query Supabase Directly
+```typescript
+// ❌ WRONG — direct Supabase access
+const { data } = await db.from('entities').select('*');
+
+// ✅ RIGHT — use GraphQL
+const { data } = await graphqlClient.query(GET_ENTITIES, { appId });
+```
+
+All data access MUST go through the GraphQL API at `/api/graphql`. Services layer handles Supabase access.
+
+### 2. AI Calls — NEVER Call AI SDKs Directly
+```typescript
+// ❌ WRONG — direct OpenAI/Anthropic call
+const response = await openai.chat.completions.create({...});
+
+// ✅ RIGHT — use AIOrchestrator
+import { AIOrchestrator } from '@/lib/ai-orchestrator';
+const result = await AIOrchestrator.runAICompletion(context, prompt, options);
+```
+
+All AI inference MUST go through `AIOrchestrator` for budget enforcement, usage logging, and API key management.
+
+### 3. Security — Tenant Isolation
+- Every query MUST be scoped to `tenant_id`
+- Use `get_auth_tenant_id()` for RLS policies
+- Never expose data across tenants
+- Auth context: `{ user_id, tenant_id, role, global_role }`
+
+### 4. Connectors — Use Connector Instances
+- Apps use connector instances, not direct database connections
+- Connector types: database, api, file_storage, email, ai_provider
+- Configure via `environments.json` for environment-specific overrides
+
+### 5. MCP Servers
+- MCP servers are built on schema definitions
+- Registered via the Integrations → MCP Server tab
+- Tools are auto-generated from entity schemas
+- API keys managed per-server with scopes
+
+## App Contract
+```json
+{
+  "schemaVersion": 1,
+  "mode": "open",
+  "dataBackend": {
+    "kind": "heurisk_native",
+    "owner": "heurisk",
+    "connectorTypes": []
+  },
+  "schemaPolicy": {
+    "mode": "evolvable",
+    "allowAliases": true,
+    "allowEntityCreation": true,
+    "allowFieldCreation": true,
+    "unknownEntities": "propose_migration",
+    "unknownFields": "propose_migration"
+  },
+  "functionPolicy": {
+    "mode": "generated",
+    "allowFunctionCreation": true,
+    "allowAgentToolCreation": true,
+    "unknownFunctions": "propose_migration"
+  },
+  "entityPolicies": [],
+  "functionRegistry": [],
+  "driftSemantics": {
+    "fixed": "contract_violation",
+    "open": "migration_proposal",
+    "hybrid": "route_by_ownership_boundary"
+  }
+}
+```
+
+## Entities
+
+
+## Connectors
+No connectors configured
+
+## Agents
+No agents configured
+
+## MCP Servers
+No MCP servers configured
+
+## File Structure
+```
+src/
+  data/
+    entities.json          # Entity schemas
+    environments.json      # Environment-specific config
+    schema-migrations.json # Database migrations
+  contracts/
+    app-contract.json      # App capabilities (auto-generated)
+  components/
+    {component-slug}/
+      template.html        # Component template
+      component.json       # Component metadata
+heurisk.config.json        # Local config (do not commit)
+```
+
+## Component Template Conventions
+- Templates are self-contained HTML with inline CSS/JS
+- Use `window.heurisk` for platform APIs
+- Data bindings: `{{field_name}}` syntax
+- Event handlers: `data-on-click="handlerName"`
+- Component state managed via `window.heurisk.setState()`
+
+## GraphQL Schema
+Query the GraphQL schema at `/api/graphql` for available types and mutations.
+Common queries: `appManifest`, `appSecurityModel`, `entities`, `connectors`
+
+## Environment Variables
+- `NEXT_PUBLIC_SUPABASE_URL` — Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Anon key (client-side)
+- `SUPABASE_SERVICE_ROLE_KEY` — Service role (server-side only)
+- `GITHUB_TOKEN` — GitHub API token (for repo operations)
+- `GITHUB_ORG` — GitHub organization/username
+
+## Testing
+- Unit tests: `npm test` (vitest)
+- Type checking: `npm run test:typecheck` (tsc --noEmit)
+- All tests must pass before committing
