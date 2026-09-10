@@ -1,108 +1,34 @@
 [
   {
     "name": "Fund",
-    "fields": [
-      { "name": "name", "type": "string" },
-      { "name": "legal_name", "type": "string" },
-      { "name": "fund_type", "type": "string" },
-      { "name": "inception_date", "type": "string" },
-      { "name": "nav", "type": "number" },
-      { "name": "nav_currency", "type": "string" },
-      { "name": "status", "type": "string" },
-      { "name": "domicile", "type": "string" },
-      { "name": "manager", "type": "string" },
-      { "name": "administrator", "type": "string" }
-    ]
+    "fields": []
   },
   {
     "name": "Issuer",
-    "fields": [
-      { "name": "name", "type": "string" },
-      { "name": "legal_entity_identifier", "type": "string" },
-      { "name": "issuer_type", "type": "string" },
-      { "name": "country", "type": "string" },
-      { "name": "industry_sector", "type": "string" },
-      { "name": "credit_rating", "type": "string" },
-      { "name": "status", "type": "string" }
-    ]
+    "fields": []
   },
   {
     "name": "Security",
-    "fields": [
-      { "name": "name", "type": "string" },
-      { "name": "isin", "type": "string" },
-      { "name": "cusip", "type": "string" },
-      { "name": "sedol", "type": "string" },
-      { "name": "security_type", "type": "string" },
-      { "name": "issuer_id", "type": "string" },
-      { "name": "currency", "type": "string" },
-      { "name": "maturity_date", "type": "string" },
-      { "name": "coupon_rate", "type": "number" },
-      { "name": "face_value", "type": "number" },
-      { "name": "current_price", "type": "number" },
-      { "name": "status", "type": "string" }
-    ]
+    "fields": []
   },
   {
     "name": "Position",
-    "fields": [
-      { "name": "fund_id", "type": "string" },
-      { "name": "security_id", "type": "string" },
-      { "name": "reporting_date", "type": "string" },
-      { "name": "temporal_type", "type": "string" },
-      { "name": "par_notional", "type": "number" },
-      { "name": "market_value", "type": "number" },
-      { "name": "units", "type": "number" },
-      { "name": "price", "type": "number" },
-      { "name": "accrued_interest", "type": "number" },
-      { "name": "unrealized_gain_loss", "type": "number" }
-    ]
+    "fields": []
   },
   {
     "name": "DataSource",
-    "fields": [
-      { "name": "name", "type": "string" },
-      { "name": "source_type", "type": "string" },
-      { "name": "reliability_score", "type": "number" },
-      { "name": "description", "type": "string" },
-      { "name": "status", "type": "string" }
-    ]
+    "fields": []
   },
   {
     "name": "FieldLineage",
-    "fields": [
-      { "name": "entity_type", "type": "string" },
-      { "name": "entity_id", "type": "string" },
-      { "name": "field_name", "type": "string" },
-      { "name": "source_id", "type": "string" },
-      { "name": "source_value", "type": "string" },
-      { "name": "confidence_score", "type": "number" },
-      { "name": "ingestion_timestamp", "type": "string" },
-      { "name": "is_winning", "type": "boolean" }
-    ]
+    "fields": []
   },
   {
     "name": "DQException",
-    "fields": [
-      { "name": "entity_type", "type": "string" },
-      { "name": "entity_id", "type": "string" },
-      { "name": "field_name", "type": "string" },
-      { "name": "exception_type", "type": "string" },
-      { "name": "severity", "type": "string" },
-      { "name": "description", "type": "string" },
-      { "name": "status", "type": "string" },
-      { "name": "created_at", "type": "string" },
-      { "name": "resolved_at", "type": "string" },
-      { "name": "resolved_by", "type": "string" }
-    ]
+    "fields": []
   },
   {
     "name": "PrecedenceRule",
-    "fields": [
-      { "name": "entity_type", "type": "string" },
-      { "name": "field_name", "type": "string" },
-      { "name": "source_priority_order", "type": "string" },
-      { "name": "tie_breaker_strategy", "type": "string" }
-    ]
+    "fields": []
   }
 ]

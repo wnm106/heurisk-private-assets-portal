@@ -3,13 +3,5 @@
   "slug": "app",
   "description": "Unified financial master data management application with internal navigation",
   "version": "1.0.0",
-  "type": "application",
-  "entities": ["Fund", "Issuer", "Security", "Position", "DataSource", "FieldLineage", "DQException", "PrecedenceRule"],
-  "features": [
-    "Dashboard with entity counts and DQ statistics",
-    "Dynamic entity grid with filtering",
-    "Position master with temporal tracking",
-    "DQ exception queue management",
-    "Manual override submission"
-  ]
+  "type": "application"
 }
