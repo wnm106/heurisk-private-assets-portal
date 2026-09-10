@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "mode": "open",
+  "dataBackend": {
+    "kind": "heurisk_native",
+    "owner": "heurisk",
+    "connectorTypes": []
+  },
+  "schemaPolicy": {
+    "mode": "evolvable",
+    "allowAliases": true,
+    "allowEntityCreation": true,
+    "allowFieldCreation": true,
+    "unknownEntities": "propose_migration",
+    "unknownFields": "propose_migration"
+  },
+  "functionPolicy": {
+    "mode": "generated",
+    "allowFunctionCreation": true,
+    "allowAgentToolCreation": true,
+    "unknownFunctions": "propose_migration"
+  },
+  "entityPolicies": [],
+  "functionRegistry": [],
+  "driftSemantics": {
+    "fixed": "contract_violation",
+    "open": "migration_proposal",
+    "hybrid": "route_by_ownership_boundary"
+  }
+}
