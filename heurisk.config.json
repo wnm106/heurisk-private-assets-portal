@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "tenant": {
+    "id": "722ff48c-02c9-42a9-9d3b-69811bc46c59"
+  },
+  "app": {
+    "id": "149578be-1e3b-43a2-ba05-77a8ab5342c5",
+    "name": "Private Assets Portal"
+  },
+  "platform": {
+    "baseUrl": "https://heurisk.vercel.app",
+    "repositoryBasePath": "/api/apps/:appId/repository",
+    "auth": {
+      "type": "heurisk_cli_bearer",
+      "tokenSource": "~/.heurisk/config.json",
+      "header": "Authorization",
+      "scheme": "Bearer"
+    },
+    "headers": {
+      "tenantId": "x-tenant-id",
+      "appId": "x-app-id"
+    },
+    "graphql": {
+      "path": "/api/graphql",
+      "endpoint": "https://heurisk.vercel.app/api/graphql"
+    },
+    "agents": {
+      "run": {
+        "path": "/api/agents/run",
+        "endpoint": "https://heurisk.vercel.app/api/agents/run",
+        "method": "POST",
+        "body": {
+          "agentIdField": "agent_id",
+          "appIdField": "app_id",
+          "payloadField": "payload"
+        }
+      },
+      "invoke": {
+        "path": "/api/ai-invoke",
+        "endpoint": "https://heurisk.vercel.app/api/ai-invoke",
+        "method": "POST",
+        "body": {
+          "appIdField": "appId",
+          "tenantIdField": "tenantId",
+          "agentNameField": "agentName",
+          "promptField": "prompt",
+          "dataField": "data"
+        }
+      },
+      "registrationsFile": "src/agents/registrations.json",
+      "auth": {
+        "type": "heurisk_cli_bearer",
+        "tokenSource": "~/.heurisk/config.json",
+        "header": "Authorization",
+        "scheme": "Bearer"
+      },
+      "headers": {
+        "tenantId": "x-tenant-id",
+        "appId": "x-app-id"
+      }
+    }
+  },
+  "repository": {
+    "sourceOfTruth": "database",
+    "syncMode": "manual"
+  }
+}
