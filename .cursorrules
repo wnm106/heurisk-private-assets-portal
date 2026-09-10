@@ -1,135 +1,397 @@
-# Heurisk Platform Rules for Private Assets Portal
+# Heurisk Embedded App: Private Assets Portal
 
-This is a Heurisk app. All code must follow Heurisk's platform conventions.
+## ⚠️ THIS IS NOT A STANDALONE APPLICATION
+
+This repository is a **Heurisk app workspace** — a collection of artifacts (entity definitions, a unified component HTML template, configuration) that are deployed into and run **inside the Heurisk platform**. It is NOT a deployable Next.js / React / Node application.
+
+**DO NOT** create:
+- A Next.js app, pages, layouts, or API routes
+- A standalone Express / Apollo / GraphQL server
+- Direct Supabase client connections (`createClient`, `supabaseAdmin`, etc.)
+- Custom SQL migration files or database tables
+- `package.json` with Next.js, React, Apollo, or other server frameworks
+- Any `import` of Heurisk platform internals (`@/lib/ai-orchestrator`, `@/lib/services`, etc.)
+- **Multiple components** — build ONE unified component with internal navigation
+
+**DO** create:
+- Entity definitions in `src/data/entities.json`
+- A single unified component in `src/components/app/template.html` with internal navigation
+- App contract and configuration files
+
+**Platform features** (entities, agents, workflows, data registrations, connectors) are managed through Heurisk's UI and APIs — they are NOT components. The component reads/writes data via the runtime bridge but does not duplicate platform functionality.
+
+---
 
 ## App Identity
 - **App ID**: 149578be-1e3b-43a2-ba05-77a8ab5342c5
 - **Tenant ID**: 722ff48c-02c9-42a9-9d3b-69811bc46c59
 - **App Name**: Private Assets Portal
 
-## Critical Rules
+---
 
-### 1. Data Access — NEVER Query Supabase Directly
-```typescript
-// ❌ WRONG — direct Supabase access
-const { data } = await db.from('entities').select('*');
+## Architecture Overview
 
-// ✅ RIGHT — use GraphQL
-const { data } = await graphqlClient.query(GET_ENTITIES, { appId });
+Heurisk apps consist of three artifact types:
+
+| Artifact | Location | Purpose |
+|---|---|---|
+| **Entities** | `src/data/entities.json` | Define data schemas (field names + types) |
+| **Component** | `src/components/app/template.html` | The unified app UI with internal navigation |
+| **Config** | `heurisk.config.json`, `src/contracts/app-contract.json` | App identity, contract policy, environment bindings |
+
+**Platform features** (entities, agents, workflows, data registrations, connectors) are managed through Heurisk's UI and APIs — they are NOT components. The single component is the app's visual shell.
+
+---
+
+## Runtime Bridge API (CRITICAL)
+
+When your component HTML runs inside Heurisk, the platform injects these **global functions** into the iframe window. Your component JS calls these directly — no imports, no fetch wrappers, no GraphQL client needed.
+
+### `initEntities()`
+Returns a map of `{ entityName: entityId }` for all entities defined in this app.
+**Call this first** before any data operations.
+
+```javascript
+const entities = await initEntities();
+// → { "Fund": "uuid-1", "Position": "uuid-2", ... }
 ```
 
-All data access MUST go through the GraphQL API at `/api/graphql`. Services layer handles Supabase access.
+### `apiFetchRecords(entityName)`
+Returns an array of record objects for the given entity.
 
-### 2. AI Calls — NEVER Call AI SDKs Directly
-```typescript
-// ❌ WRONG — direct OpenAI/Anthropic call
-const response = await openai.chat.completions.create({...});
-
-// ✅ RIGHT — use AIOrchestrator
-import { AIOrchestrator } from '@/lib/ai-orchestrator';
-const result = await AIOrchestrator.runAICompletion(context, prompt, options);
+```javascript
+const funds = await apiFetchRecords('Fund');
+// → [{ id: "rec-1", name: "Alpha Fund", nav: 1250000, ... }, ...]
 ```
 
-All AI inference MUST go through `AIOrchestrator` for budget enforcement, usage logging, and API key management.
+### `apiCreateRecord(entityName, data)`
+Creates a new record. Returns the created record with `id`.
 
-### 3. Security — Tenant Isolation
-- Every query MUST be scoped to `tenant_id`
-- Use `get_auth_tenant_id()` for RLS policies
-- Never expose data across tenants
-- Auth context: `{ user_id, tenant_id, role, global_role }`
+```javascript
 
-### 4. Connectors — Use Connector Instances
-- Apps use connector instances, not direct database connections
-- Connector types: database, api, file_storage, email, ai_provider
-- Configure via `environments.json` for environment-specific overrides
+---
 
-### 5. MCP Servers
-- MCP servers are built on schema definitions
-- Registered via the Integrations → MCP Server tab
-- Tools are auto-generated from entity schemas
-- API keys managed per-server with scopes
+## Component Template Rules
 
-## App Contract
-```json
-{
-  "schemaVersion": 1,
-  "mode": "open",
-  "dataBackend": {
-    "kind": "heurisk_native",
-    "owner": "heurisk",
-    "connectorTypes": []
-  },
-  "schemaPolicy": {
-    "mode": "evolvable",
-    "allowAliases": true,
-    "allowEntityCreation": true,
-    "allowFieldCreation": true,
-    "unknownEntities": "propose_migration",
-    "unknownFields": "propose_migration"
-  },
-  "functionPolicy": {
-    "mode": "generated",
-    "allowFunctionCreation": true,
-    "allowAgentToolCreation": true,
-    "unknownFunctions": "propose_migration"
-  },
-  "entityPolicies": [],
-  "functionRegistry": [],
-  "driftSemantics": {
-    "fixed": "contract_violation",
-    "open": "migration_proposal",
-    "hybrid": "route_by_ownership_boundary"
+### Single Unified Component
+Each app has **ONE component** that contains the full app UI with internal navigation. This component is the app's visual shell — it handles all views, routing, and user interactions.
+
+**Platform features** (entities, agents, workflows, data registrations) are managed through Heurisk's UI/API — they are NOT separate components. The component reads/writes data via the runtime bridge but doesn't duplicate platform functionality.
+
+### Empty State Rendering (CRITICAL)
+**Your component MUST render immediately, even when no data exists.** Never wait for data to load before showing the UI.
+
+**Correct initialization flow:**
+1. Render the static UI structure immediately (topbar, navigation, containers)
+2. Show a loading state or empty state while data loads
+3. Attempt to load entities and records
+4. If data exists, render the data views
+5. If no data exists, show a friendly empty state with guidance
+
+**Empty state requirements:**
+- Must show the app's branding and navigation structure
+- Must explain what the app does and how to get started
+- Must not show a blank page or "Failed to load" error
+- Must gracefully handle missing `initEntities()` or `apiFetchRecords()` functions
+
+**Example empty state pattern:**
+```javascript
+document.addEventListener('DOMContentLoaded', async () => {
+  // Render empty state immediately
+  document.getElementById('app').innerHTML = renderEmptyState();
+
+  try {
+    if (typeof initEntities === 'function') {
+      entities = await initEntities();
+      for (const name of Object.keys(entities)) {
+        records[name] = await apiFetchRecords(name);
+      }
+      
+      const hasData = Object.values(records).some(r => r && r.length > 0);
+      if (hasData) {
+        render(); // Switch to data view
+      }
+      // Otherwise keep the empty state
+    }
+  } catch (err) {
+    console.error('Failed to initialize:', err);
+    // Keep the empty state on error
   }
+});
+
+function renderEmptyState() {
+  return `
+    <div class="topbar"><!-- your app header --></div>
+    <div class="content">
+      <h1>Welcome to Your App</h1>
+      <p>This app is ready to manage your data.</p>
+      <p>To get started, add entities and records through the Heurisk platform.</p>
+    </div>
+  `;
 }
 ```
 
-## Entities
+**Anti-patterns (NEVER DO THESE):**
+```javascript
+// ❌ WRONG: Waiting for data before rendering anything
+document.addEventListener('DOMContentLoaded', async () => {
+  entities = await initEntities();
+  records = await apiFetchRecords('Fund');
+  render(); // Page is blank until this completes
+});
 
+// ❌ WRONG: Showing error when no data exists
+if (!records.Fund || records.Fund.length === 0) {
+  document.getElementById('app').innerHTML = 'Failed to load data';
+}
 
-## Connectors
-No connectors configured
+// ❌ WRONG: Not handling missing bridge functions
+entities = await initEntities(); // Crashes if initEntities is undefined
+```
 
-## Agents
-No agents configured
+### Structure
+The component is a **single self-contained HTML file** with inline `<style>` and `<script>`. It contains:
+- Internal navigation (tabs, sidebar, or top nav)
+- Multiple views/screens managed via JavaScript state
+- All CSS and JS inline — no external dependencies
 
-## MCP Servers
-No MCP servers configured
+### Initialization Pattern
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    .nav { display: flex; gap: 8px; padding: 16px; border-bottom: 1px solid #e5e7eb; }
+    .nav-item { padding: 8px 16px; cursor: pointer; border-radius: 6px; }
+    .nav-item.active { background: #3b82f6; color: white; }
+    .view { display: none; padding: 24px; }
+    .view.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <div class="nav-item active" onclick="showView('dashboard')">Dashboard</div>
+    <div class="nav-item" onclick="showView('entities')">Entities</div>
+    <div class="nav-item" onclick="showView('settings')">Settings</div>
+  </div>
+
+  <div id="view-dashboard" class="view active"><!-- Dashboard --></div>
+  <div id="view-entities" class="view"><!-- Entities --></div>
+  <div id="view-settings" class="view"><!-- Settings --></div>
+
+  <script>
+    let entities = {};
+    let records = {};
+    let currentView = 'dashboard';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      entities = await initEntities();
+      for (const name of Object.keys(entities)) {
+        records[name] = await apiFetchRecords(name);
+      }
+      render();
+    });
+
+    function showView(viewName) {
+      currentView = viewName;
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById('view-' + viewName).classList.add('active');
+      event.target.classList.add('active');
+      render();
+    }
+
+    function render() {
+      if (currentView === 'dashboard') renderDashboard();
+      else if (currentView === 'entities') renderEntities();
+      else if (currentView === 'settings') renderSettings();
+    }
+
+    function renderDashboard() { /* ... */ }
+    function renderEntities() { /* ... */ }
+    function renderSettings() { /* ... */ }
+
+    window.onRecordsChanged = async () => {
+      for (const name of Object.keys(entities)) {
+        records[name] = await apiFetchRecords(name);
+      }
+      render();
+    };
+  </script>
+</body>
+
+---
+
+## Data Model
+
+### Entities (Schema Definitions)
+Entities define the **shape** of your data. They live in `src/data/entities.json`:
+
+```json
+[
+  {
+    "name": "Fund",
+    "fields": [
+      { "name": "name", "type": "string" },
+      { "name": "nav", "type": "number" },
+      { "name": "status", "type": "string" }
+    ]
+  }
+]
+```
+
+### Records (Data Instances)
+Records are **JSON blobs** stored in Heurisk's `app_records` table. Each record belongs to one entity. Fields are not enforced at the database level — your component handles validation.
+
+```javascript
+// A "Fund" record looks like:
+{ id: "uuid", name: "Alpha Fund", nav: 1250000, status: "active" }
+```
+
+---
 
 ## File Structure
 ```
+heurisk.config.json           # Platform connection config (generated)
 src/
-  data/
-    entities.json          # Entity schemas
-    environments.json      # Environment-specific config
-    schema-migrations.json # Database migrations
   contracts/
-    app-contract.json      # App capabilities (auto-generated)
+    app-contract.json          # App contract policy (generated)
+  data/
+    entities.json              # Entity schema definitions - YOU EDIT THIS
+    environments.json          # Environment-specific overrides
+    schema-migrations.json     # Schema migration tracking
   components/
-    {component-slug}/
-      template.html        # Component template
-      component.json       # Component metadata
-heurisk.config.json        # Local config (do not commit)
+    app/
+      template.html            # The unified app UI - YOU EDIT THIS
+      component.json           # Component metadata
 ```
 
-## Component Template Conventions
-- Templates are self-contained HTML with inline CSS/JS
-- Use `window.heurisk` for platform APIs
-- Data bindings: `{{field_name}}` syntax
-- Event handlers: `data-on-click="handlerName"`
-- Component state managed via `window.heurisk.setState()`
+Note: There is ONE component directory (typically named `app/`). All views, navigation, and UI logic live in its `template.html`.
 
-## GraphQL Schema
-Query the GraphQL schema at `/api/graphql` for available types and mutations.
-Common queries: `appManifest`, `appSecurityModel`, `entities`, `connectors`
+---
 
-## Environment Variables
-- `NEXT_PUBLIC_SUPABASE_URL` — Supabase project URL
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Anon key (client-side)
-- `SUPABASE_SERVICE_ROLE_KEY` — Service role (server-side only)
-- `GITHUB_TOKEN` — GitHub API token (for repo operations)
-- `GITHUB_ORG` — GitHub organization/username
+## Anti-Patterns (NEVER DO THESE)
+
+```javascript
+// NEVER create a standalone server or API routes
+import { ApolloServer } from '@apollo/server';        // NO
+import express from 'express';                         // NO
+export async function GET(request) { ... }             // NO (Next.js route handler)
+
+// NEVER create direct database connections
+import { createClient } from '@supabase/supabase-js';  // NO
+const db = createClient(url, key);                     // NO
+
+// NEVER import Heurisk platform internals
+import { AIOrchestrator } from '@/lib/ai-orchestrator'; // NO - not available in app repos
+
+// NEVER create custom SQL tables or migrations
+CREATE TABLE my_custom_table (...)                      // NO - use entities.json instead
+
+// NEVER use React, Vue, or other frameworks in components
+import React from 'react';                              // NO - use vanilla JS in HTML
+
+// NEVER use external CDNs or font imports
+<link href="https://fonts.googleapis.com/..." />        // NO - use system fonts
+
+// NEVER create multiple components per app
+src/components/dashboard/template.html                  // NO
+src/components/entities/template.html                   // NO - ONE component with internal nav
+src/components/settings/template.html                   // NO
+```
+
+---
+
+## Correct Patterns
+
+```javascript
+// USE the runtime bridge for all data operations
+const entities = await initEntities();
+const funds = await apiFetchRecords('Fund');
+await apiCreateRecord('Fund', { name: 'New Fund' });
+await apiUpdateRecord('Fund', id, { nav: 1500000 });
+await apiDeleteRecord('Fund', id);
+
+// USE agents for AI capabilities
+const analysis = await apiCallAgent('analyst', 'Summarize risk', { data });
+
+// USE vanilla JS with DOM manipulation
+document.getElementById('app').innerHTML = html;
+document.addEventListener('click', handler);
+
+// USE internal navigation for multi-view apps
+function showView(viewName) { /* switch active view */ }
+
+// USE system fonts
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+
+// USE CSS custom properties for theming
+:root { --primary: #4f46e5; --surface: #ffffff; --text: #1f2937; }
+```
+
+---
+
+## Workflow
+
+1. **Define entities** in `src/data/entities.json` (schemas with field names + types)
+2. **Build the unified component** in `src/components/app/template.html` with internal navigation
+3. **Test locally** by opening the HTML file in a browser (bridge functions will be undefined — mock them for development)
+4. **Push to Heurisk** via `heurisk repo:push` — the platform validates and deploys
+5. **Heurisk renders** your component in an iframe with the runtime bridge injected
+
+---
 
 ## Testing
-- Unit tests: `npm test` (vitest)
-- Type checking: `npm run test:typecheck` (tsc --noEmit)
-- All tests must pass before committing
+- Validate entity schemas: `npm run repo:validate`
+- Preview components: open `template.html` directly in a browser
+- Full integration test: push to Heurisk and view in the app dashboard
+
+</html>
+```
+
+### Key Rules
+1. **One component per app** — contains all views with internal navigation
+2. **No external dependencies** — no React, Vue, Tailwind CDN, or Google Fonts
+3. **No `import` or `require`** — everything is inline
+4. **No direct API calls** — use the bridge functions (`apiFetchRecords`, etc.)
+5. **No Supabase client** — the platform handles all data access
+6. **No authentication code** — the platform injects auth context automatically
+7. **Use `DOMContentLoaded`** for initialization
+8. **Implement `window.onRecordsChanged`** for live data refresh
+9. **Use system fonts** — `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`
+10. **Load data once** — fetch all entities on init, share across views
+
+const newFund = await apiCreateRecord('Fund', { name: 'Beta Fund', nav: 500000, status: 'active' });
+```
+
+### `apiUpdateRecord(entityName, recordId, data)`
+Updates an existing record (partial merge). Returns updated record.
+
+```javascript
+await apiUpdateRecord('Fund', fundId, { nav: 1300000 });
+```
+
+### `apiDeleteRecord(entityName, recordId)`
+Deletes a record. Returns `true` on success.
+
+```javascript
+await apiDeleteRecord('Fund', fundId);
+```
+
+### `apiCallAgent(agentName, prompt, data)`
+Invokes a Heurisk agent by name. Returns the agent's text response.
+
+```javascript
+const analysis = await apiCallAgent('risk-analyst', 'Analyze this fund for concentration risk', { fundId: fund.id });
+```
+
+
+At runtime, Heurisk:
+1. Reads entity definitions → creates `app_entities` rows in the platform database
+2. Stores records as JSON blobs in `app_records` (one table, all entities)
+3. Renders the component HTML inside a sandboxed iframe with a **runtime bridge** injected
+4. The bridge exposes global functions the component JS calls to read/write data

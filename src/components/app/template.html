@@ -1,0 +1,1171 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meridian MDM — Master Data Management</title>
+<style>
+  :root {
+    --bg: #f7f6f3;
+    --bg-alt: #efece6;
+    --surface: #ffffff;
+    --ink: #0a0a0a;
+    --ink-2: #2a2a28;
+    --ink-3: #5a5a55;
+    --ink-4: #9a9a93;
+    --line: #e6e3dc;
+    --line-strong: #c9c5bb;
+    --accent: #b8531a;
+    --accent-2: #1b3a4b;
+    --gold: #c89c3f;
+    --green: #2f7d4f;
+    --red: #b53030;
+    --amber: #c98a0c;
+    --src-bloomberg: #c2410c;
+    --src-wso: #6d28d9;
+    --src-dealcloud: #0369a1;
+    --src-allvue: #047857;
+    --src-spciq: #be185d;
+    --src-manual: #b45309;
+    --src-derived: #475569;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 13px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body { min-height: 100vh; }
+  .serif { font-family: Georgia, 'Times New Roman', serif; }
+  .mono { font-family: 'Courier New', monospace; }
+  button { font-family: inherit; cursor: pointer; }
+  input, select, textarea { font-family: inherit; }
+
+  .topbar {
+    background: var(--ink);
+    color: var(--bg);
+    padding: 12px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #000;
+  }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .brand-mark {
+    width: 32px; height: 32px;
+    background: var(--accent);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: Georgia, serif;
+    font-weight: 700;
+    font-size: 18px;
+  }
+  .brand-text {
+    font-family: Georgia, serif;
+    font-weight: 600;
+    font-size: 16px;
+  }
+  .brand-sub {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #8a8a85;
+    padding-left: 14px;
+    border-left: 1px solid #2a2a28;
+    margin-left: 4px;
+  }
+  .role-tabs { display: flex; margin-left: 32px; border: 1px solid #2a2a28; }
+  .role-tab {
+    background: transparent;
+    color: #8a8a85;
+    border: none;
+    padding: 7px 16px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-right: 1px solid #2a2a28;
+  }
+  .role-tab:last-child { border-right: none; }
+  .role-tab.active { background: var(--accent); color: #fff; }
+  .role-tab:hover:not(.active) { color: #fff; background: #1a1a17; }
+  .topbar-right { display: flex; align-items: center; gap: 20px; font-size: 11px; }
+  .status-pill { display: flex; align-items: center; gap: 6px; color: #8a8a85; text-transform: uppercase; letter-spacing: 1px; font-size: 10px; }
+  .status-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; }
+  .avatar {
+    width: 28px; height: 28px;
+    background: #2a2a28;
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .legend {
+    background: var(--surface);
+    padding: 10px 28px;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    border-bottom: 1px solid var(--line);
+  }
+  .legend-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--ink-3); }
+  .legend-item { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--ink-2); font-weight: 500; }
+  .legend-swatch { width: 3px; height: 14px; }
+
+  .main { padding: 28px; max-width: 1640px; margin: 0 auto; }
+
+  .crumbs { display: flex; align-items: center; gap: 10px; font-size: 11px; color: var(--ink-3); margin-bottom: 22px; text-transform: uppercase; letter-spacing: 1px; }
+  .crumb-link { color: var(--accent); cursor: pointer; font-weight: 500; }
+  .crumb-link:hover { text-decoration: underline; }
+  .crumbs .sep { color: var(--ink-4); }
+  .crumb-current { color: var(--ink); font-weight: 500; }
+
+  .hero {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 32px 36px;
+    margin-bottom: 22px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 32px;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    right: -80px; top: -60px;
+    width: 240px; height: 240px;
+    background: radial-gradient(circle, rgba(184, 83, 26, 0.08) 0%, transparent 70%);
+  }
+  .hero-eyebrow { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 2.5px; color: var(--accent); margin-bottom: 10px; }
+  .hero-title { font-family: Georgia, serif; font-size: 28px; font-weight: 500; line-height: 1.2; letter-spacing: -0.3px; color: var(--ink); margin-bottom: 8px; }
+  .hero-title em { color: var(--accent); font-style: italic; font-weight: 600; }
+  .hero-sub { font-size: 13px; color: var(--ink-3); max-width: 540px; line-height: 1.55; }
+  .search-box { display: flex; align-items: center; gap: 10px; background: var(--bg); border: 1px solid var(--line-strong); padding: 11px 16px; min-width: 340px; z-index: 1; }
+  .search-box input { border: none; outline: none; background: transparent; font-size: 13px; flex: 1; color: var(--ink); }
+  .search-box input::placeholder { color: var(--ink-4); }
+  .kbd { font-family: 'Courier New', monospace; font-size: 10px; padding: 3px 7px; background: var(--surface); border: 1px solid var(--line); color: var(--ink-3); }
+
+  .stat-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-bottom: 28px; border: 1px solid var(--line); background: var(--surface); }
+  .stat { padding: 20px 24px; border-right: 1px solid var(--line); position: relative; }
+  .stat:last-child { border-right: none; }
+  .stat-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--ink-3); margin-bottom: 12px; }
+  .stat-val { font-family: Georgia, serif; font-size: 32px; font-weight: 500; color: var(--ink); line-height: 1; margin-bottom: 6px; letter-spacing: -0.5px; }
+  .stat-val sup { font-size: 16px; color: var(--ink-3); margin-left: 2px; }
+  .stat-sub { font-size: 11px; color: var(--ink-3); }
+  .stat-sub .up { color: var(--green); font-weight: 600; }
+  .stat-sub .down { color: var(--red); font-weight: 600; }
+  .stat-sub .warn { color: var(--amber); font-weight: 600; }
+
+  .section-title { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px; }
+  .section-title h2 { font-family: Georgia, serif; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--ink); }
+  .section-title .hint { font-size: 11px; color: var(--ink-3); font-style: italic; }
+
+  .entity-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 32px; }
+  .entity-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 22px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .entity-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 2px;
+    background: var(--card-accent, var(--accent));
+    transform: scaleX(0.3);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+  }
+  .entity-card:hover { border-color: var(--ink-4); transform: translateY(-2px); box-shadow: 0 12px 32px rgba(10, 10, 10, 0.06); }
+  .entity-card:hover::before { transform: scaleX(1); }
+  .entity-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 18px; }
+  .entity-icon { font-family: Georgia, serif; font-size: 36px; font-weight: 500; color: var(--card-accent, var(--accent)); line-height: 1; letter-spacing: -2px; }
+  .entity-count { text-align: right; }
+  .entity-count .num { font-family: Georgia, serif; font-size: 22px; font-weight: 500; color: var(--ink); letter-spacing: -0.5px; }
+  .entity-count .lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--ink-3); }
+  .entity-name { font-family: Georgia, serif; font-size: 18px; font-weight: 600; color: var(--ink); margin-bottom: 6px; letter-spacing: -0.2px; }
+  .entity-desc { font-size: 12px; color: var(--ink-3); line-height: 1.5; margin-bottom: 16px; min-height: 34px; }
+  .entity-sources { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 16px; }
+  .src-tag { font-size: 9px; padding: 3px 7px; background: var(--bg); color: var(--ink-2); font-weight: 500; text-transform: uppercase; letter-spacing: 0.7px; border: 1px solid var(--line); }
+  .entity-footer { display: flex; justify-content: space-between; align-items: flex-end; padding-top: 14px; border-top: 1px solid var(--line); }
+  .entity-quality .lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--ink-3); margin-bottom: 4px; }
+  .entity-quality .val { font-family: Georgia, serif; font-size: 22px; font-weight: 500; line-height: 1; }
+  .entity-quality .delta { font-size: 11px; margin-left: 4px; font-weight: 500; }
+
+  .nav-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .nav-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 22px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 16px;
+    align-items: center;
+  }
+  .nav-card:hover { border-color: var(--ink-4); transform: translateY(-2px); box-shadow: 0 12px 32px rgba(10, 10, 10, 0.06); }
+  .nav-icon { width: 44px; height: 44px; background: var(--bg); color: var(--accent); display: flex; align-items: center; justify-content: center; }
+  .nav-title { font-family: Georgia, serif; font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+  .nav-desc { font-size: 12px; color: var(--ink-3); }
+
+  .page-header { background: var(--surface); border: 1px solid var(--line); padding: 22px 28px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; }
+  .page-title-block { display: flex; align-items: center; gap: 18px; }
+  .page-icon { width: 56px; height: 56px; background: var(--bg); color: var(--card-accent, var(--accent)); display: flex; align-items: center; justify-content: center; font-family: Georgia, serif; font-size: 36px; font-weight: 500; border: 1px solid var(--line); }
+  .page-title { font-family: Georgia, serif; font-size: 24px; font-weight: 600; color: var(--ink); letter-spacing: -0.3px; margin-bottom: 4px; }
+  .page-meta { font-size: 12px; color: var(--ink-3); }
+  .page-actions { display: flex; gap: 8px; }
+  .btn { padding: 9px 16px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink-2); transition: all 0.15s; }
+  .btn:hover { background: var(--bg); border-color: var(--ink-4); }
+  .btn-primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .btn-primary:hover { background: var(--accent); border-color: var(--accent); }
+  .btn-sm { padding: 5px 11px; font-size: 10px; letter-spacing: 0.7px; }
+
+  .filter-bar { background: var(--surface); border: 1px solid var(--line); padding: 12px 18px; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .filter-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--ink-3); }
+  .filter-pill { padding: 5px 11px; background: var(--bg); font-size: 11px; color: var(--ink-2); font-weight: 500; display: flex; align-items: center; gap: 7px; cursor: pointer; border: 1px solid var(--line); }
+  .filter-pill.active { background: #fef6e8; border-color: var(--amber); color: #92400e; }
+  .filter-pill .x { color: var(--ink-4); font-size: 12px; }
+  .filter-count { margin-left: auto; font-size: 11px; color: var(--ink-3); }
+  .filter-count strong { color: var(--ink); font-weight: 600; }
+
+  .data-table { background: var(--surface); border: 1px solid var(--line); }
+  .tbl-head { display: grid; grid-template-columns: 130px 1.6fr 130px 1fr 70px 120px 130px 90px 100px; gap: 14px; padding: 12px 18px; background: var(--bg); border-bottom: 1px solid var(--line); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--ink-3); }
+  .tbl-row { display: grid; grid-template-columns: 130px 1.6fr 130px 1fr 70px 120px 130px 90px 100px; gap: 14px; padding: 14px 18px; border-bottom: 1px solid var(--line); font-size: 12px; align-items: center; cursor: pointer; transition: background 0.1s; }
+  .tbl-row:last-child { border-bottom: none; }
+  .tbl-row:hover { background: var(--bg); }
+  .row-id { font-family: 'Courier New', monospace; color: var(--accent); font-weight: 500; font-size: 11px; }
+  .row-name { color: var(--ink); font-weight: 500; }
+  .type-chip { font-size: 10px; padding: 3px 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; }
+  .type-chip.loan { background: #f3eafd; color: #6d28d9; }
+  .type-chip.bond { background: #fde9d7; color: #c2410c; }
+  .row-num { font-family: 'Courier New', monospace; font-weight: 500; text-align: right; }
+  .src-badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; border: 1px solid; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; }
+  .src-badge .dot { width: 5px; height: 5px; border-radius: 50%; }
+  .conflicts-cell { text-align: center; }
+  .conflict-num { display: inline-block; padding: 2px 9px; background: #fdecec; color: var(--red); font-weight: 600; font-size: 11px; font-family: 'Courier New', monospace; }
+  .check { color: var(--green); font-weight: 700; }
+  .quality-cell { display: inline-flex; align-items: center; gap: 6px; font-family: 'Courier New', monospace; font-weight: 600; }
+  .trend-up { color: var(--green); }
+  .trend-down { color: var(--red); }
+  .trend-flat { color: var(--ink-4); }
+
+  .record-header { background: var(--surface); border: 1px solid var(--line); padding: 24px 28px; margin-bottom: 18px; }
+  .record-meta-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .rec-id { font-family: 'Courier New', monospace; font-size: 12px; font-weight: 600; color: var(--accent); }
+  .status-chip { font-size: 10px; padding: 3px 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; }
+  .status-chip.active { background: #e1f1e7; color: var(--green); }
+  .status-chip.conflict { background: #fdf0d7; color: #92400e; }
+  .rec-time { font-size: 11px; color: var(--ink-3); }
+  .record-name { font-family: Georgia, serif; font-size: 24px; font-weight: 600; color: var(--ink); letter-spacing: -0.3px; margin-bottom: 4px; }
+  .record-tag { font-size: 12px; color: var(--ink-3); }
+  .record-header-right { display: flex; align-items: center; gap: 24px; }
+  .score-block { text-align: center; }
+  .score-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--ink-3); margin-bottom: 6px; }
+  .score-val { font-family: Georgia, serif; font-size: 38px; font-weight: 500; line-height: 1; letter-spacing: -1px; }
+  .record-actions { display: flex; flex-direction: column; gap: 7px; }
+
+  .detail-layout { display: grid; grid-template-columns: 1fr 340px; gap: 18px; align-items: flex-start; }
+
+  .field-section { background: var(--surface); border: 1px solid var(--line); margin-bottom: 14px; overflow: hidden; }
+  .field-section-head { padding: 13px 20px; background: var(--bg); border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
+  .field-section-name { font-family: Georgia, serif; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--ink); }
+  .field-section-count { font-size: 11px; color: var(--ink-3); font-family: 'Courier New', monospace; }
+  .field-row { display: grid; grid-template-columns: 220px 1fr 130px; gap: 18px; padding: 12px 20px 12px 16px; border-bottom: 1px solid var(--line); align-items: center; border-left: 4px solid var(--field-color, var(--ink-4)); transition: background 0.1s; }
+  .field-row:last-child { border-bottom: none; }
+  .field-row:hover { background: var(--bg); }
+  .field-label { font-size: 12px; color: var(--ink-3); font-weight: 500; display: flex; align-items: center; gap: 6px; }
+  .field-value-cell { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .field-value { font-size: 13px; color: var(--ink); font-weight: 400; }
+  .field-value.conflict { font-weight: 600; }
+  .conflict-badge { font-size: 9px; padding: 2px 7px; background: #fdecec; color: var(--red); font-weight: 600; text-transform: uppercase; letter-spacing: 0.7px; }
+  .field-src-cell { display: flex; justify-content: flex-end; }
+
+  .rail-card { background: var(--surface); border: 1px solid var(--line); padding: 18px 20px; margin-bottom: 14px; }
+  .rail-card.alert { border-color: #f3c8c8; background: #fef9f9; }
+  .rail-head { font-family: Georgia, serif; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--ink); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .rail-head.alert { color: var(--red); }
+  .rail-count { margin-left: auto; background: #fdecec; color: var(--red); padding: 2px 8px; font-size: 10px; font-family: 'Courier New', monospace; font-weight: 600; }
+
+  .src-contribution { margin-bottom: 10px; }
+  .src-contribution:last-child { margin-bottom: 0; }
+  .src-c-head { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px; }
+  .src-c-name { color: var(--ink-2); font-weight: 500; }
+  .src-c-detail { color: var(--ink-3); font-family: 'Courier New', monospace; font-size: 10px; }
+  .src-c-bar { height: 4px; background: var(--bg-alt); overflow: hidden; }
+  .src-c-bar > div { height: 100%; }
+
+  .conflict-item { padding: 10px 12px; background: #fef0f0; border-left: 3px solid var(--red); margin-bottom: 8px; font-size: 11px; }
+  .conflict-item:last-child { margin-bottom: 0; }
+  .conflict-item .ttl { font-weight: 600; color: #7f1d1d; margin-bottom: 3px; }
+  .conflict-item .det { color: #991b1b; line-height: 1.5; }
+
+  .activity-item { display: flex; gap: 12px; padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid var(--line); }
+  .activity-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+  .act-avatar { width: 26px; height: 26px; background: var(--bg-alt); color: var(--ink-2); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; flex-shrink: 0; }
+  .act-txt { font-size: 11px; color: var(--ink); line-height: 1.5; }
+  .act-time { font-size: 10px; color: var(--ink-4); margin-top: 2px; font-family: 'Courier New', monospace; }
+
+  .rule-card { background: var(--surface); border: 1px solid var(--line); padding: 18px 22px; margin-bottom: 12px; }
+  .rule-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .rule-field-name { font-family: Georgia, serif; font-size: 16px; font-weight: 600; color: var(--ink); }
+  .std-pill { font-size: 9px; padding: 3px 8px; background: #e8eef2; color: var(--accent-2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-left: 10px; }
+  .rule-cond { padding: 11px 16px; background: var(--bg); margin-bottom: 12px; font-family: 'Courier New', monospace; font-size: 11px; color: var(--ink-2); border-left: 3px solid var(--accent); }
+  .rule-cond .kw { color: var(--accent); font-weight: 600; }
+  .rule-chain { display: flex; align-items: center; gap: 8px; }
+  .rule-chain-lbl { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--ink-3); }
+  .arrow { color: var(--ink-4); font-size: 14px; line-height: 1; }
+  .rule-note { margin-left: auto; font-size: 11px; color: var(--ink-3); font-style: italic; }
+  .rule-tabs { display: flex; gap: 6px; margin-bottom: 18px; }
+  .rule-tab { padding: 8px 16px; background: var(--surface); color: var(--ink-2); border: 1px solid var(--line-strong); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; }
+  .rule-tab.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+  .pillar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; }
+  .pillar { background: var(--surface); border: 1px solid var(--line); padding: 24px 26px; border-top: 3px solid var(--pillar-color); position: relative; overflow: hidden; }
+  .pillar-lbl { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.8px; color: var(--ink-3); margin-bottom: 14px; }
+  .pillar-val { font-family: Georgia, serif; font-size: 44px; font-weight: 500; color: var(--ink); line-height: 1; letter-spacing: -1px; margin-bottom: 8px; }
+  .pillar-sub { font-size: 12px; color: var(--ink-2); margin-bottom: 4px; }
+  .pillar-det { font-size: 11px; color: var(--ink-3); }
+
+  .quality-matrix { background: var(--surface); border: 1px solid var(--line); margin-bottom: 18px; overflow: hidden; }
+  .qm-head { padding: 16px 22px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
+  .qm-title { font-family: Georgia, serif; font-size: 15px; font-weight: 600; color: var(--ink); }
+  .qm-window { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 1px; }
+  .qm-thead { display: grid; grid-template-columns: 180px 1fr 1fr 130px 110px 90px; gap: 18px; padding: 10px 22px; background: var(--bg); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--ink-3); }
+  .qm-row { display: grid; grid-template-columns: 180px 1fr 1fr 130px 110px 90px; gap: 18px; padding: 16px 22px; border-bottom: 1px solid var(--line); font-size: 12px; align-items: center; }
+  .qm-row:last-child { border-bottom: none; }
+  .qm-ent { font-weight: 600; color: var(--ink); font-family: Georgia, serif; font-size: 14px; }
+  .qm-bar-wrap { display: flex; align-items: center; gap: 12px; }
+  .qm-bar { flex: 1; height: 5px; background: var(--bg-alt); overflow: hidden; }
+  .qm-bar > div { height: 100%; }
+  .qm-pct { font-family: 'Courier New', monospace; font-weight: 600; color: var(--ink); min-width: 38px; font-size: 12px; }
+  .qm-traj { font-family: 'Courier New', monospace; font-weight: 600; font-size: 12px; }
+  .qm-exc { text-align: right; font-family: 'Courier New', monospace; }
+  .qm-spark { text-align: right; }
+
+  .bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .bottom-card { background: var(--surface); border: 1px solid var(--line); padding: 20px 24px; }
+  .bottom-title { font-family: Georgia, serif; font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 14px; }
+  .exc-item, .src-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 12px; }
+  .exc-item:last-child, .src-item:last-child { border-bottom: none; }
+  .sev-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 9px; }
+  .sev-high { background: var(--red); }
+  .sev-med { background: var(--amber); }
+  .exc-rule { color: var(--ink-2); }
+  .exc-count { font-family: 'Courier New', monospace; font-weight: 600; color: var(--ink); }
+  .src-item-name { font-weight: 500; color: var(--ink-2); display: flex; align-items: center; gap: 10px; }
+  .src-item-bar { width: 4px; height: 16px; }
+  .src-item-vals { display: flex; align-items: center; gap: 14px; }
+  .src-item-delta { font-family: 'Courier New', monospace; font-size: 11px; font-weight: 500; }
+  .src-item-score { font-family: 'Courier New', monospace; font-weight: 600; color: var(--ink); }
+
+  .src-bg-bloomberg { background: var(--src-bloomberg); }
+  .src-bg-wso { background: var(--src-wso); }
+  .src-bg-dealcloud { background: var(--src-dealcloud); }
+  .src-bg-allvue { background: var(--src-allvue); }
+  .src-bg-spciq { background: var(--src-spciq); }
+  .src-bg-manual { background: var(--src-manual); }
+  .src-bg-derived { background: var(--src-derived); }
+
+  .view-fade { animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+  .view { display: none; }
+  .view.active { display: block; }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-text">Meridian</div>
+      <div class="brand-sub">Master Data Management</div>
+      <div class="role-tabs">
+        <button class="role-tab active">Steward</button>
+        <button class="role-tab">Ops</button>
+        <button class="role-tab">Governance</button>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="status-pill">
+        <span class="status-dot"></span>
+        <span>All systems operational</span>
+      </div>
+      <div class="avatar">JD</div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-label">Data Sources</div>
+    <div class="legend-item"><span class="legend-swatch src-bg-bloomberg"></span>Bloomberg</div>
+    <div class="legend-item"><span class="legend-swatch src-bg-wso"></span>WSO</div>
+    <div class="legend-item"><span class="legend-swatch src-bg-dealcloud"></span>DealCloud</div>
+    <div class="legend-item"><span class="legend-swatch src-bg-allvue"></span>Allvue</div>
+    <div class="legend-item"><span class="legend-swatch src-bg-spciq"></span>S&P Capital IQ</div>
+    <div class="legend-item"><span class="legend-swatch src-bg-manual"></span>Manual</div>
+    <div class="legend-item"><span class="legend-swatch src-bg-derived"></span>Derived</div>
+    <div class="legend-sync">Last sync: <strong>2 min ago</strong></div>
+  </div>
+
+  <div class="main" id="app">
+    <div class="view-fade">
+      <div class="crumbs">
+        <span class="crumb-current">Home</span>
+      </div>
+      <div class="page-header">
+        <div class="page-title-block">
+          <div style="width: 4px; height: 48px; background: var(--accent);"></div>
+          <div>
+            <div class="page-title">Welcome to Meridian MDM</div>
+            <div class="page-meta">Financial Master Data Management Platform</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding: 60px 28px; text-align: center;">
+        <div style="font-size: 48px; margin-bottom: 16px;">📊</div>
+        <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px; color: var(--ink-2);">No Data Available</div>
+        <div style="color: var(--ink-3); max-width: 500px; margin: 0 auto; line-height: 1.6;">
+          This application is ready to manage your financial master data. 
+          To get started, add entities and records through the Heurisk platform, 
+          or contact your administrator to configure data sources.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let entities = {};
+    let records = {};
+    let state = { view: 'landing', entity: null, recordId: null, expandedField: null };
+
+    const sources = {
+      bloomberg: { name: 'Bloomberg', hex: 'var(--src-bloomberg)' },
+      wso: { name: 'WSO', hex: 'var(--src-wso)' },
+      dealcloud: { name: 'DealCloud', hex: 'var(--src-dealcloud)' },
+      allvue: { name: 'Allvue', hex: 'var(--src-allvue)' },
+      spciq: { name: 'S&P Capital IQ', hex: 'var(--src-spciq)' },
+      manual: { name: 'Manual', hex: 'var(--src-manual)' },
+      derived: { name: 'Derived', hex: 'var(--src-derived)' }
+    };
+
+    // Render empty state when no data is available
+    function renderEmptyState() {
+      return `
+        <div class="view-fade">
+          <div class="crumbs">
+            <span class="crumb-current">Home</span>
+          </div>
+          <div class="page-header">
+            <div class="page-title-block">
+              <div style="width: 4px; height: 48px; background: var(--accent);"></div>
+              <div>
+                <div class="page-title">Welcome to Meridian MDM</div>
+                <div class="page-meta">Financial Master Data Management Platform</div>
+              </div>
+            </div>
+          </div>
+          <div style="padding: 60px 28px; text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 16px;">📊</div>
+            <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px; color: var(--ink-2);">No Data Available</div>
+            <div style="color: var(--ink-3); max-width: 500px; margin: 0 auto; line-height: 1.6;">
+              This application is ready to manage your financial master data. 
+              To get started, add entities and records through the Heurisk platform, 
+              or contact your administrator to configure data sources.
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Render empty state immediately
+      document.getElementById('app').innerHTML = renderEmptyState();
+
+      // Check if runtime bridge is available
+      if (typeof initEntities !== 'function') {
+        console.log('Runtime bridge not available - showing empty state');
+        return;
+      }
+
+      try {
+        // Add timeout to prevent hanging
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Initialization timeout')), 5000)
+        );
+        
+        const initPromise = (async () => {
+          entities = await initEntities();
+          for (const name of Object.keys(entities)) {
+            records[name] = await apiFetchRecords(name);
+          }
+        })();
+
+        await Promise.race([initPromise, timeoutPromise]);
+        
+        // Check if we have any data
+        const hasData = Object.values(records).some(r => r && r.length > 0);
+        
+        if (hasData) {
+          render();
+        }
+        // Otherwise keep the empty state
+      } catch (err) {
+        console.error('Failed to initialize:', err);
+        // Keep the empty state on error
+      }
+    });
+
+    window.onRecordsChanged = async () => {
+      for (const name of Object.keys(entities)) {
+        records[name] = await apiFetchRecords(name);
+      }
+      const hasData = Object.values(records).some(r => r && r.length > 0);
+      if (hasData) {
+        render();
+      } else {
+        document.getElementById('app').innerHTML = renderEmptyState();
+      }
+    };
+
+    function go(view, params = {}) {
+      state.view = view;
+      Object.assign(state, params);
+      render();
+      window.scrollTo(0, 0);
+    }
+
+    function render() {
+      const app = document.getElementById('app');
+      if (state.view === 'landing') app.innerHTML = renderLanding();
+      else if (state.view === 'entity-list') app.innerHTML = renderEntityList();
+      else if (state.view === 'record-detail') app.innerHTML = renderRecordDetail();
+      else if (state.view === 'precedence') app.innerHTML = renderPrecedence();
+      else if (state.view === 'quality') app.innerHTML = renderQuality();
+      else if (state.view === 'lists') app.innerHTML = renderLists();
+    }
+
+    function fmt$(n) {
+      if (n == null) return '—';
+      return '$' + Number(n).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    }
+
+    function qualityColor(q) {
+      if (q >= 95) return 'var(--green)';
+      if (q >= 85) return 'var(--accent-2)';
+      if (q >= 75) return 'var(--amber)';
+      return 'var(--red)';
+    }
+
+    function trendArrow(t) {
+      if (t > 0) return '<span class="trend-up">▲</span>';
+      if (t < 0) return '<span class="trend-down">▼</span>';
+      return '<span class="trend-flat">▬</span>';
+    }
+
+    function srcBadge(src) {
+      const s = sources[src];
+      if (!s) return '';
+      return `<span class="src-badge" style="border-color: ${s.hex}; color: ${s.hex};"><span class="dot" style="background: ${s.hex};"></span>${s.name}</span>`;
+    }
+
+    function renderLanding() {
+      const fundCount = (records.Fund || []).length;
+      const issuerCount = (records.Issuer || []).length;
+      const securityCount = (records.Security || []).length;
+      const positionCount = (records.Position || []).length;
+      const dqCount = (records.DQException || []).filter(e => e.status === 'open').length;
+
+      return `
+        <div class="view-fade">
+          <div class="hero">
+            <div>
+              <div class="hero-eyebrow">Private Assets Portal</div>
+              <div class="hero-title">Unified master data for <em>private markets</em></div>
+              <div class="hero-sub">Bi-temporal golden records with multi-source lineage, field-level precedence, and data quality governance across funds, issuers, securities, and positions.</div>
+            </div>
+            <div class="search-box">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="text" placeholder="Search records, IDs, or fields..." />
+              <span class="kbd">⌘K</span>
+            </div>
+          </div>
+
+          <div class="stat-strip">
+            <div class="stat">
+              <div class="stat-label">Total Records</div>
+              <div class="stat-val">${(fundCount + issuerCount + securityCount + positionCount).toLocaleString()}<sup>+</sup></div>
+              <div class="stat-sub"><span class="up">↑ 2.4%</span> vs last week</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Active Sources</div>
+              <div class="stat-val">7</div>
+              <div class="stat-sub">All feeds operational</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Data Quality</div>
+              <div class="stat-val" style="color: var(--green);">94.2<sup>%</sup></div>
+              <div class="stat-sub"><span class="up">↑ 1.8%</span> week-over-week</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Open Exceptions</div>
+              <div class="stat-val" style="color: ${dqCount > 0 ? 'var(--red)' : 'var(--ink)'};">${dqCount}</div>
+              <div class="stat-sub">${dqCount > 0 ? '<span class="warn">Requires attention</span>' : 'All clear'}</div>
+            </div>
+          </div>
+
+          <div class="section-title">
+            <h2>Entity Domains</h2>
+            <div class="hint">Click to explore records</div>
+          </div>
+
+          <div class="entity-grid">
+            <div class="entity-card" style="--card-accent: var(--accent);" onclick="go('entity-list', {entity: 'Fund'})">
+              <div class="entity-head">
+                <div class="entity-icon">F</div>
+                <div class="entity-count"><div class="num">${fundCount}</div><div class="lbl">Records</div></div>
+              </div>
+              <div class="entity-name">Funds</div>
+              <div class="entity-desc">Investment vehicles, NAV, inception dates, managers, and administrators.</div>
+              <div class="entity-sources">
+                <span class="src-tag">Allvue</span>
+                <span class="src-tag">DealCloud</span>
+                <span class="src-tag">Manual</span>
+              </div>
+              <div class="entity-footer">
+                <div class="entity-quality">
+                  <div class="lbl">Quality</div>
+                  <div class="val" style="color: var(--green);">96<span style="font-size: 14px; color: var(--ink-3);">%</span></div>
+                </div>
+                <div style="font-size: 11px; color: var(--ink-3);">3 stewards</div>
+              </div>
+            </div>
+
+            <div class="entity-card" style="--card-accent: var(--accent-2);" onclick="go('entity-list', {entity: 'Issuer'})">
+              <div class="entity-head">
+                <div class="entity-icon">I</div>
+                <div class="entity-count"><div class="num">${issuerCount}</div><div class="lbl">Records</div></div>
+              </div>
+              <div class="entity-name">Issuers</div>
+              <div class="entity-desc">Debt and equity issuers with credit ratings, industry sectors, and LEI.</div>
+              <div class="entity-sources">
+                <span class="src-tag">Bloomberg</span>
+                <span class="src-tag">S&P Capital IQ</span>
+                <span class="src-tag">WSO</span>
+              </div>
+              <div class="entity-footer">
+                <div class="entity-quality">
+                  <div class="lbl">Quality</div>
+                  <div class="val" style="color: var(--accent-2);">89<span style="font-size: 14px; color: var(--ink-3);">%</span></div>
+                </div>
+                <div style="font-size: 11px; color: var(--ink-3);">2 stewards</div>
+              </div>
+            </div>
+
+            <div class="entity-card" style="--card-accent: var(--gold);" onclick="go('entity-list', {entity: 'Security'})">
+              <div class="entity-head">
+                <div class="entity-icon">S</div>
+                <div class="entity-count"><div class="num">${securityCount}</div><div class="lbl">Records</div></div>
+              </div>
+              <div class="entity-name">Securities</div>
+              <div class="entity-desc">Bonds, loans, equities, and derivatives with ISIN, CUSIP, and pricing.</div>
+              <div class="entity-sources">
+                <span class="src-tag">Bloomberg</span>
+                <span class="src-tag">WSO</span>
+                <span class="src-tag">S&P Capital IQ</span>
+              </div>
+              <div class="entity-footer">
+                <div class="entity-quality">
+                  <div class="lbl">Quality</div>
+                  <div class="val" style="color: var(--gold);">92<span style="font-size: 14px; color: var(--ink-3);">%</span></div>
+                </div>
+                <div style="font-size: 11px; color: var(--ink-3);">4 stewards</div>
+              </div>
+            </div>
+
+            <div class="entity-card" style="--card-accent: var(--green);" onclick="go('entity-list', {entity: 'Position'})">
+              <div class="entity-head">
+                <div class="entity-icon">P</div>
+                <div class="entity-count"><div class="num">${positionCount}</div><div class="lbl">Records</div></div>
+              </div>
+              <div class="entity-name">Positions</div>
+              <div class="entity-desc">Fund-security intersections with market value, par notional, and P&L.</div>
+              <div class="entity-sources">
+                <span class="src-tag">Allvue</span>
+                <span class="src-tag">DealCloud</span>
+              </div>
+              <div class="entity-footer">
+                <div class="entity-quality">
+                  <div class="lbl">Quality</div>
+                  <div class="val" style="color: var(--green);">94<span style="font-size: 14px; color: var(--ink-3);">%</span></div>
+                </div>
+                <div style="font-size: 11px; color: var(--ink-3);">2 stewards</div>
+              </div>
+            </div>
+
+            <div class="entity-card" style="--card-accent: var(--red);" onclick="go('quality')">
+              <div class="entity-head">
+                <div class="entity-icon" style="font-size: 28px;">⚠</div>
+                <div class="entity-count"><div class="num">${dqCount}</div><div class="lbl">Open</div></div>
+              </div>
+              <div class="entity-name">DQ Exceptions</div>
+              <div class="entity-desc">Data quality exceptions requiring review: availability, tolerance, trajectory.</div>
+              <div class="entity-sources">
+                <span class="src-tag">Availability</span>
+                <span class="src-tag">Tolerance</span>
+                <span class="src-tag">Trajectory</span>
+              </div>
+              <div class="entity-footer">
+                <div class="entity-quality">
+                  <div class="lbl">Severity</div>
+                  <div class="val" style="color: ${dqCount > 10 ? 'var(--red)' : 'var(--amber)'};">${dqCount > 10 ? 'High' : 'Med'}</div>
+                </div>
+                <div style="font-size: 11px; color: var(--ink-3);">Review queue</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-title">
+            <h2>Cross-Cutting Tools</h2>
+          </div>
+
+          <div class="nav-row">
+            <div class="nav-card" onclick="go('precedence')">
+              <div class="nav-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h18M3 12h18M3 18h12"/><circle cx="5" cy="6" r="1.5" fill="currentColor"/><circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="5" cy="18" r="1.5" fill="currentColor"/></svg>
+              </div>
+              <div>
+                <div class="nav-title">Precedence Rules</div>
+                <div class="nav-desc">Field-level source priority with conditional logic.</div>
+              </div>
+            </div>
+            <div class="nav-card" onclick="go('quality')">
+              <div class="nav-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 5-5"/></svg>
+              </div>
+              <div>
+                <div class="nav-title">Data Quality Framework</div>
+                <div class="nav-desc">Availability, quality, and trajectory across all domains.</div>
+              </div>
+            </div>
+            <div class="nav-card" onclick="go('lists')">
+              <div class="nav-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
+              </div>
+              <div>
+                <div class="nav-title">Standardized Value Lists</div>
+                <div class="nav-desc">Controlled vocabularies — types, seniority, ratings, GICS.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderEntityList() {
+      const entityType = state.entity || 'Fund';
+      const data = records[entityType] || [];
+      const count = data.length;
+
+      return `
+        <div class="view-fade">
+          <div class="crumbs">
+            <span class="crumb-link" onclick="go('landing')">Home</span>
+            <span class="sep">›</span>
+            <span class="crumb-current">${entityType}</span>
+          </div>
+
+          <div class="page-header">
+            <div class="page-title-block">
+              <div style="width: 4px; height: 48px; background: var(--accent);"></div>
+              <div>
+                <div class="page-title">${entityType}</div>
+                <div class="page-meta">${count.toLocaleString()} records · ${Object.keys(sources).length} active sources</div>
+              </div>
+            </div>
+            <div class="page-actions">
+              <button class="btn">Export</button>
+              <button class="btn">Bulk Edit</button>
+              <button class="btn btn-primary">+ New Record</button>
+            </div>
+          </div>
+
+          <div class="filter-bar">
+            <div class="filter-label">Filter</div>
+            <div class="filter-pill">Status: All <span style="color:var(--ink-4);">▾</span></div>
+            <div class="filter-pill">Primary Source: All <span style="color:var(--ink-4);">▾</span></div>
+            <div class="filter-count">Showing <strong>${count}</strong> of ${count.toLocaleString()}</div>
+          </div>
+
+          <div class="data-table">
+            <div class="tbl-head">
+              <div>ID</div>
+              <div>Name</div>
+              <div>Type</div>
+              <div>Status</div>
+              <div>Ccy</div>
+              <div style="text-align: right;">Value</div>
+              <div>Primary Src</div>
+              <div style="text-align: center;">Quality</div>
+              <div style="text-align: center;">Trend</div>
+            </div>
+            ${data.slice(0, 50).map(r => `
+              <div class="tbl-row" onclick="go('record-detail', {recordId: '${r.id}', entity: '${entityType}'})">
+                <div class="row-id">${r.id.substring(0, 8)}</div>
+                <div class="row-name">${r.name || r.legal_name || '—'}</div>
+                <div>${r.fund_type || r.issuer_type || r.security_type || '—'}</div>
+                <div><span class="status-chip active">● ${r.status || 'active'}</span></div>
+                <div style="color: var(--ink-3); font-weight: 500; font-family: 'Courier New', monospace; font-size: 11px;">${r.nav_currency || r.currency || 'USD'}</div>
+                <div class="row-num" style="color: var(--ink);">${fmt$(r.nav || r.face_value || r.market_value)}</div>
+                <div>${srcBadge('bloomberg')}</div>
+                <div style="text-align: center;">
+                  <span class="quality-cell" style="color: var(--green);">92 ${trendArrow(1)}</span>
+                </div>
+                <div style="text-align: center;">
+                  <span class="trend-up">▲</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderRecordDetail() {
+      const entityType = state.entity || 'Fund';
+      const data = records[entityType] || [];
+      const rec = data.find(r => r.id === state.recordId) || data[0];
+      if (!rec) return '<div style="padding: 40px; text-align: center;">Record not found</div>';
+
+      return `
+        <div class="view-fade">
+          <div class="crumbs">
+            <span class="crumb-link" onclick="go('landing')">Home</span>
+            <span class="sep">›</span>
+            <span class="crumb-link" onclick="go('entity-list', {entity: '${entityType}'})">${entityType}</span>
+            <span class="sep">›</span>
+            <span class="crumb-current">${rec.id.substring(0, 8)}</span>
+          </div>
+
+          <div class="record-header">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <div>
+                <div class="record-meta-row">
+                  <span class="rec-id">${rec.id}</span>
+                  <span class="status-chip active">● ${rec.status || 'active'}</span>
+                  <span class="rec-time">Last reviewed 2h ago</span>
+                </div>
+                <div class="record-name">${rec.name || rec.legal_name || 'Unnamed'}</div>
+                <div class="record-tag">${rec.fund_type || rec.issuer_type || rec.security_type || entityType} · ${rec.nav_currency || rec.currency || 'USD'}</div>
+              </div>
+              <div class="record-header-right">
+                <div class="score-block">
+                  <div class="score-lbl">Golden Record</div>
+                  <div class="score-val" style="color: var(--green);">92<span style="font-size:18px;color:var(--ink-3);">%</span></div>
+                </div>
+                <div class="record-actions">
+                  <button class="btn btn-sm">View Lineage</button>
+                  <button class="btn btn-sm btn-primary">Edit Record</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-layout">
+            <div>
+              <div class="field-section">
+                <div class="field-section-head">
+                  <div class="field-section-name">Core Attributes</div>
+                  <div class="field-section-count">${Object.keys(rec).length - 1} fields</div>
+                </div>
+                ${Object.entries(rec).filter(([k]) => k !== 'id').map(([key, value]) => `
+                  <div class="field-row" style="--field-color: var(--src-bloomberg);">
+                    <div class="field-label">${key.replace(/_/g, ' ')}</div>
+                    <div class="field-value-cell">
+                      <span class="field-value">${value || '—'}</span>
+                    </div>
+                    <div class="field-src-cell">${srcBadge('bloomberg')}</div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <div>
+              <div class="rail-card">
+                <div class="rail-head">Source Contribution</div>
+                ${[
+                  { src: 'bloomberg', pct: 48, count: 11 },
+                  { src: 'wso', pct: 17, count: 4 },
+                  { src: 'spciq', pct: 13, count: 3 },
+                  { src: 'manual', pct: 9, count: 2 },
+                ].map(s => {
+                  const sObj = sources[s.src];
+                  return `
+                    <div class="src-contribution">
+                      <div class="src-c-head">
+                        <span class="src-c-name">${sObj.name}</span>
+                        <span class="src-c-detail">${s.count} · ${s.pct}%</span>
+                      </div>
+                      <div class="src-c-bar"><div style="background: ${sObj.hex}; width: ${s.pct * 2}%;"></div></div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+
+              <div class="rail-card">
+                <div class="rail-head">Activity</div>
+                ${[
+                  { who: 'JD', time: '2h ago', txt: 'Reviewed record · marked active' },
+                  { who: 'SY', time: '1d ago', txt: 'Bloomberg sync updated 6 fields' },
+                  { who: 'BR', time: '2d ago', txt: 'Manual override on NAV → 1250000' },
+                ].map(a => `
+                  <div class="activity-item">
+                    <div class="act-avatar">${a.who}</div>
+                    <div>
+                      <div class="act-txt">${a.txt}</div>
+                      <div class="act-time">${a.time}</div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPrecedence() {
+      const rules = records.PrecedenceRule || [];
+      return `
+        <div class="view-fade">
+          <div class="crumbs">
+            <span class="crumb-link" onclick="go('landing')">Home</span>
+            <span class="sep">›</span>
+            <span class="crumb-current">Precedence Rules</span>
+          </div>
+
+          <div class="page-header">
+            <div>
+              <div class="page-title">Source Precedence Rules</div>
+              <div class="page-meta">${rules.length} rules active across ${Object.keys(entities).length} entity domains</div>
+            </div>
+            <div class="page-actions">
+              <button class="btn">Test Rule</button>
+              <button class="btn btn-primary">+ New Rule</button>
+            </div>
+          </div>
+
+          <div class="rule-tabs">
+            <button class="rule-tab active">Securities</button>
+            <button class="rule-tab">Issuers</button>
+            <button class="rule-tab">Funds</button>
+            <button class="rule-tab">Positions</button>
+          </div>
+
+          ${rules.length > 0 ? rules.map(r => `
+            <div class="rule-card">
+              <div class="rule-head">
+                <div>
+                  <span class="rule-field-name">${r.field_name}</span>
+                </div>
+                <div style="display: flex; gap: 6px;">
+                  <button class="btn btn-sm">Edit</button>
+                  <button class="btn btn-sm">Test</button>
+                </div>
+              </div>
+              <div class="rule-cond"><span class="kw">WHEN</span> ${r.entity_type} <span class="kw">IS NOT NULL</span></div>
+              <div class="rule-chain">
+                <div class="rule-chain-lbl">Precedence:</div>
+                ${r.source_priority_order.split(',').map((src, i, arr) => `
+                  ${srcBadge(src.trim())}
+                  ${i < arr.length - 1 ? '<span class="arrow">→</span>' : ''}
+                `).join('')}
+                <div class="rule-note">${r.tie_breaker_strategy}</div>
+              </div>
+            </div>
+          `).join('') : '<div style="padding: 40px; text-align: center; color: var(--ink-3);">No precedence rules defined yet</div>'}
+        </div>
+      `;
+    }
+
+    function renderQuality() {
+      const exceptions = records.DQException || [];
+      const openCount = exceptions.filter(e => e.status === 'open').length;
+      const criticalCount = exceptions.filter(e => e.severity === 'critical').length;
+
+      return `
+        <div class="view-fade">
+          <div class="crumbs">
+            <span class="crumb-link" onclick="go('landing')">Home</span>
+            <span class="sep">›</span>
+            <span class="crumb-current">Data Quality Framework</span>
+          </div>
+
+          <div class="pillar-grid">
+            <div class="pillar" style="--pillar-color: var(--accent-2);">
+              <div class="pillar-lbl">Availability</div>
+              <div class="pillar-val">94.2<span style="font-size:24px;color:var(--ink-3);">%</span></div>
+              <div class="pillar-sub">of required fields populated</div>
+              <div class="pillar-det">All domains above 90% threshold</div>
+            </div>
+            <div class="pillar" style="--pillar-color: var(--green);">
+              <div class="pillar-lbl">Quality</div>
+              <div class="pillar-val">92.4<span style="font-size:24px;color:var(--ink-3);">%</span></div>
+              <div class="pillar-sub">fields passing validation rules</div>
+              <div class="pillar-det">${openCount} active validation exceptions</div>
+            </div>
+            <div class="pillar" style="--pillar-color: var(--accent);">
+              <div class="pillar-lbl">Trajectory</div>
+              <div class="pillar-val" style="color: var(--green);">+1.8<span style="font-size:24px;color:var(--ink-3);">%</span></div>
+              <div class="pillar-sub">week-over-week improvement</div>
+              <div class="pillar-det">Trending up in 4 of 5 domains</div>
+            </div>
+          </div>
+
+          <div class="quality-matrix">
+            <div class="qm-head">
+              <div class="qm-title">Quality Matrix by Entity</div>
+              <div class="qm-window">Trailing 7 days</div>
+            </div>
+            <div class="qm-thead">
+              <div>Entity</div>
+              <div>Availability</div>
+              <div>Quality</div>
+              <div>Trajectory</div>
+              <div style="text-align: right;">Exceptions</div>
+              <div style="text-align: right;">Trend</div>
+            </div>
+            ${['Fund', 'Issuer', 'Security', 'Position'].map(ent => {
+              const count = (records[ent] || []).length;
+              const excCount = exceptions.filter(e => e.entity_type === ent && e.status === 'open').length;
+              return `
+                <div class="qm-row">
+                  <div class="qm-ent">${ent}</div>
+                  <div class="qm-bar-wrap">
+                    <div class="qm-bar"><div style="background: var(--accent-2); width: 94%;"></div></div>
+                    <div class="qm-pct">94%</div>
+                  </div>
+                  <div class="qm-bar-wrap">
+                    <div class="qm-bar"><div style="background: var(--green); width: 92%;"></div></div>
+                    <div class="qm-pct">92%</div>
+                  </div>
+                  <div class="qm-traj" style="color: var(--green);">▲ 1.8%</div>
+                  <div class="qm-exc">${excCount === 0 ? '<span style="color:var(--green);">—</span>' : `<span style="color:var(--red); font-weight: 600;">${excCount}</span>`}</div>
+                  <div class="qm-spark">
+                    <svg width="60" height="28" viewBox="0 0 60 28" style="display: inline-block;">
+                      <polyline points="0,20 10,18 20,16 30,14 40,12 50,10 60,8" fill="none" stroke="var(--green)" stroke-width="1.5"/>
+                    </svg>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          <div class="bottom-grid">
+            <div class="bottom-card">
+              <div class="bottom-title">Top Exception Rules (by count)</div>
+              ${[
+                { rule: 'Name normalization mismatch', count: 38, sev: 'med' },
+                { rule: 'Date stale (>30 days)', count: 24, sev: 'high' },
+                { rule: 'Industry missing or unmapped', count: 19, sev: 'med' },
+                { rule: 'Rating not set on Active record', count: 14, sev: 'high' },
+              ].map(r => `
+                <div class="exc-item">
+                  <div class="exc-rule"><span class="sev-dot sev-${r.sev}"></span>${r.rule}</div>
+                  <div class="exc-count">${r.count}</div>
+                </div>
+              `).join('')}
+            </div>
+            <div class="bottom-card">
+              <div class="bottom-title">Source Reliability (90-day)</div>
+              ${[
+                { src: 'bloomberg', score: 97, delta: 0.3 },
+                { src: 'wso', score: 94, delta: 1.1 },
+                { src: 'spciq', score: 93, delta: -0.2 },
+                { src: 'manual', score: 88, delta: -1.4 },
+              ].map(r => {
+                const sObj = sources[r.src];
+                const up = r.delta >= 0;
+                return `
+                  <div class="src-item">
+                    <div class="src-item-name">
+                      <span class="src-item-bar" style="background: ${sObj.hex};"></span>
+                      ${sObj.name}
+                    </div>
+                    <div class="src-item-vals">
+                      <span class="src-item-delta" style="color: ${up ? 'var(--green)' : 'var(--red)'};">${up ? '▲' : '▼'} ${Math.abs(r.delta)}</span>
+                      <span class="src-item-score">${r.score}%</span>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderLists() {
+      return `
+        <div class="view-fade">
+          <div class="crumbs">
+            <span class="crumb-link" onclick="go('landing')">Home</span>
+            <span class="sep">›</span>
+            <span class="crumb-current">Standardized Value Lists</span>
+          </div>
+
+          <div class="page-header">
+            <div>
+              <div class="page-title">Standardized Value Lists</div>
+              <div class="page-meta">Controlled vocabularies for data normalization</div>
+            </div>
+            <div class="page-actions">
+              <button class="btn">Import</button>
+              <button class="btn btn-primary">+ New List</button>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;">
+            ${[
+              { name: 'Security Type', count: 18, sources: ['Bloomberg', 'WSO'] },
+              { name: 'Issuer Type', count: 7, sources: ['WSO', 'Bloomberg'] },
+              { name: 'Fund Type', count: 12, sources: ['Allvue', 'DealCloud'] },
+              { name: 'Currency', count: 195, sources: ['Bloomberg'] },
+              { name: 'Credit Rating', count: 22, sources: ['S&P Capital IQ'] },
+              { name: 'Industry Sector', count: 69, sources: ['S&P Capital IQ'] },
+            ].map(l => `
+              <div class="entity-card" style="--card-accent: var(--accent-2);">
+                <div class="entity-head">
+                  <div>
+                    <div class="entity-name" style="font-size:15px;">${l.name}</div>
+                    <div style="font-size: 11px; color: var(--ink-3); margin-top: 4px;">${l.count} canonical values</div>
+                  </div>
+                  <span class="check" style="font-size: 18px;">✓</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 12px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin: 12px 0; font-size: 11px;">
+                  <div><div style="color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.7px; font-size: 9px; margin-bottom: 3px;">Values</div><div class="mono" style="color: var(--ink); font-weight: 600;">${l.count}</div></div>
+                  <div><div style="color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.7px; font-size: 9px; margin-bottom: 3px;">Sources</div><div style="color: var(--ink); font-weight: 500; font-size: 11px;">${l.sources.length}</div></div>
+                </div>
+                <div class="entity-sources">
+                  ${l.sources.map(s => `<span class="src-tag">${s}</span>`).join('')}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
