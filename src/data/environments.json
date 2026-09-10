@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "bindings": [],
+  "environments": [
+    {
+      "environment": "dev",
+      "overrides": {
+        "schemaVersion": 1
+      }
+    },
+    {
+      "environment": "production",
+      "overrides": {
+        "schemaVersion": 1
+      }
+    },
+    {
+      "environment": "staging",
+      "overrides": {
+        "schemaVersion": 1
+      }
+    }
+  ]
+}
