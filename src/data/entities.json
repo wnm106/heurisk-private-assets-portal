@@ -30,5 +30,122 @@
   {
     "name": "PrecedenceRule",
     "fields": []
+  },
+  {
+    "name": "SchemaEntity",
+    "fields": [
+      { "name": "name", "type": "string" },
+      { "name": "display_name", "type": "string" },
+      { "name": "description", "type": "string" },
+      { "name": "entity_role", "type": "string" },
+      { "name": "parent_type_id", "type": "string" },
+      { "name": "is_abstract", "type": "boolean" },
+      { "name": "date_granularity", "type": "string" },
+      { "name": "is_date_dimension", "type": "boolean" },
+      { "name": "position_x", "type": "number" },
+      { "name": "position_y", "type": "number" },
+      { "name": "created_at", "type": "string" }
+    ]
+  },
+  {
+    "name": "SchemaField",
+    "fields": [
+      { "name": "entity_id", "type": "string" },
+      { "name": "name", "type": "string" },
+      { "name": "display_name", "type": "string" },
+      { "name": "field_type", "type": "string" },
+      { "name": "is_required", "type": "boolean" },
+      { "name": "is_primary_key", "type": "boolean" },
+      { "name": "is_foreign_key", "type": "boolean" },
+      { "name": "references_entity", "type": "string" },
+      { "name": "applies_to_type_ids", "type": "string" },
+      { "name": "validation_rule", "type": "string" },
+      { "name": "default_value", "type": "string" },
+      { "name": "display_order", "type": "number" }
+    ]
+  },
+  {
+    "name": "SchemaRelationship",
+    "fields": [
+      { "name": "parent_entity_id", "type": "string" },
+      { "name": "child_entity_id", "type": "string" },
+      { "name": "relationship_type", "type": "string" },
+      { "name": "foreign_key_field", "type": "string" },
+      { "name": "cardinality", "type": "string" },
+      { "name": "applies_to_type_ids", "type": "string" }
+    ]
+  },
+  {
+    "name": "ExpressionColumn",
+    "fields": [
+      { "name": "entity_id", "type": "string" },
+      { "name": "name", "type": "string" },
+      { "name": "display_name", "type": "string" },
+      { "name": "expression", "type": "string" },
+      { "name": "output_type", "type": "string" },
+      { "name": "description", "type": "string" },
+      { "name": "depends_on_fields", "type": "string" },
+      { "name": "is_active", "type": "boolean" },
+      { "name": "display_order", "type": "number" }
+    ]
+  },
+  {
+    "name": "StandardizedList",
+    "fields": [
+      { "name": "name", "type": "string" },
+      { "name": "display_name", "type": "string" },
+      { "name": "description", "type": "string" },
+      { "name": "values", "type": "string" },
+      { "name": "is_active", "type": "boolean" },
+      { "name": "created_at", "type": "string" }
+    ]
+  },
+  {
+    "name": "FieldListBinding",
+    "fields": [
+      { "name": "field_id", "type": "string" },
+      { "name": "list_id", "type": "string" },
+      { "name": "is_required", "type": "boolean" }
+    ]
+  },
+  {
+    "name": "LinkType",
+    "fields": [
+      { "name": "name", "type": "string" },
+      { "name": "display_name", "type": "string" },
+      { "name": "description", "type": "string" },
+      { "name": "source_entity_id", "type": "string" },
+      { "name": "target_entity_id", "type": "string" },
+      { "name": "cardinality", "type": "string" },
+      { "name": "is_bidirectional", "type": "boolean" },
+      { "name": "is_active", "type": "boolean" },
+      { "name": "created_at", "type": "string" }
+    ]
+  },
+  {
+    "name": "RecordLink",
+    "fields": [
+      { "name": "link_type_id", "type": "string" },
+      { "name": "source_entity_name", "type": "string" },
+      { "name": "source_record_id", "type": "string" },
+      { "name": "target_entity_name", "type": "string" },
+      { "name": "target_record_id", "type": "string" },
+      { "name": "created_by", "type": "string" },
+      { "name": "created_at", "type": "string" },
+      { "name": "notes", "type": "string" }
+    ]
+  },
+  {
+    "name": "EntityTemplate",
+    "fields": [
+      { "name": "entity_id", "type": "string" },
+      { "name": "name", "type": "string" },
+      { "name": "html_content", "type": "string" },
+      { "name": "field_order", "type": "string" },
+      { "name": "is_default", "type": "boolean" },
+      { "name": "version", "type": "number" },
+      { "name": "created_at", "type": "string" },
+      { "name": "updated_at", "type": "string" }
+    ]
   }
 ]

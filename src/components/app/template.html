@@ -385,6 +385,1055 @@
 
   .view { display: none; }
   .view.active { display: block; }
+
+  /* ===== Schema Builder ===== */
+  .schema-canvas {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    min-height: 600px;
+    position: relative;
+    overflow: hidden;
+    padding: 28px;
+  }
+  .schema-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    position: relative;
+  }
+  .schema-entity-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--card-accent, var(--accent));
+    cursor: pointer;
+    transition: all 0.18s ease;
+    position: relative;
+  }
+  .schema-entity-card:hover {
+    border-color: var(--ink-4);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(10,10,10,0.06);
+  }
+  .schema-entity-card.date-dim {
+    border-top-color: var(--gold);
+  }
+  .schema-entity-head {
+    padding: 16px 18px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--line);
+  }
+  .schema-entity-title {
+    font-family: Georgia, serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .schema-entity-role {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 2px;
+  }
+  .role-fact { background: #e8eef2; color: var(--accent-2); }
+  .role-dimension { background: #f3eafd; color: #6d28d9; }
+  .role-bridge { background: #fef3c7; color: #92400e; }
+  .role-date-dim { background: #fef3c7; color: var(--gold); }
+  .schema-entity-fields {
+    padding: 8px 0;
+  }
+  .schema-field-item {
+    padding: 6px 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--ink-2);
+  }
+  .schema-field-item:hover { background: var(--bg); }
+  .schema-field-icon {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--ink-4);
+    flex-shrink: 0;
+  }
+  .schema-field-icon.pk { color: var(--accent); }
+  .schema-field-icon.fk { color: var(--accent-2); }
+  .schema-field-name { flex: 1; }
+  .schema-field-type {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    color: var(--ink-4);
+  }
+  .schema-entity-footer {
+    padding: 10px 18px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--ink-3);
+  }
+  .schema-date-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    padding: 2px 8px;
+    background: #fef3c7;
+    color: #92400e;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .schema-add-card {
+    background: var(--bg);
+    border: 2px dashed var(--line-strong);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    color: var(--ink-3);
+  }
+  .schema-add-card:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: #fef6e8;
+  }
+  .schema-add-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+    line-height: 1;
+  }
+  .schema-add-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Relationship lines */
+  .schema-rel-line {
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .schema-rel-label {
+    position: absolute;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 2px 8px;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--ink-3);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* Modal overlay */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(10,10,10,0.5);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.15s ease;
+  }
+  .modal-panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    width: 90%;
+    max-width: 560px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 64px rgba(10,10,10,0.15);
+  }
+  .modal-head {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .modal-title {
+    font-family: Georgia, serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: var(--ink-4);
+    cursor: pointer;
+    padding: 4px 8px;
+  }
+  .modal-close:hover { color: var(--ink); }
+  .modal-body {
+    padding: 24px;
+  }
+  .modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  .form-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .form-group { margin-bottom: 18px; }
+  .form-group label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--ink-3);
+    margin-bottom: 6px;
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+    font-size: 13px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    border-color: var(--accent);
+  }
+  .form-group textarea { resize: vertical; min-height: 72px; }
+  .form-group .hint {
+    font-size: 11px;
+    color: var(--ink-4);
+    margin-top: 4px;
+  }
+  .form-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+    cursor: pointer;
+  }
+  .form-check input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+  }
+  .form-check-label {
+    font-size: 13px;
+    color: var(--ink-2);
+  }
+  .form-check-desc {
+    font-size: 11px;
+    color: var(--ink-4);
+    margin-left: auto;
+  }
+
+  /* Parent entity picker */
+  .parent-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .parent-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .parent-chip:hover { border-color: var(--accent); }
+  .parent-chip.selected {
+    background: #e8eef2;
+    border-color: var(--accent-2);
+    color: var(--accent-2);
+    font-weight: 600;
+  }
+  .parent-chip .x {
+    font-size: 12px;
+    color: var(--ink-4);
+    margin-left: 2px;
+  }
+
+  /* Date granularity selector */
+  .date-gran-selector {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .date-gran-option {
+    padding: 10px 8px;
+    text-align: center;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    cursor: pointer;
+    transition: all 0.12s;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--ink-3);
+  }
+  .date-gran-option:hover { border-color: var(--accent); color: var(--ink-2); }
+  .date-gran-option.selected {
+    background: #fef3c7;
+    border-color: var(--gold);
+    color: #92400e;
+    font-weight: 600;
+  }
+  .date-gran-icon {
+    font-size: 18px;
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  /* Entity detail view */
+  .entity-detail-header {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 24px 28px;
+    margin-bottom: 18px;
+  }
+  .entity-detail-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .entity-detail-name {
+    font-family: Georgia, serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .entity-detail-desc {
+    font-size: 13px;
+    color: var(--ink-3);
+    max-width: 600px;
+    line-height: 1.5;
+  }
+  .entity-detail-stats {
+    display: flex;
+    gap: 24px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+  }
+  .entity-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .entity-stat-val {
+    font-family: Georgia, serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .entity-stat-lbl {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--ink-3);
+  }
+
+  /* Field table */
+  .field-table { background: var(--surface); border: 1px solid var(--line); }
+  .field-table-head {
+    display: grid;
+    grid-template-columns: 32px 1.2fr 100px 80px 60px 60px 140px 80px;
+    gap: 12px;
+    padding: 10px 18px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--ink-3);
+    align-items: center;
+  }
+  .field-table-row {
+    display: grid;
+    grid-template-columns: 32px 1.2fr 100px 80px 60px 60px 140px 80px;
+    gap: 12px;
+    padding: 10px 18px;
+    border-bottom: 1px solid var(--line);
+    font-size: 12px;
+    align-items: center;
+    transition: background 0.1s;
+  }
+  .field-table-row:last-child { border-bottom: none; }
+  .field-table-row:hover { background: var(--bg); }
+  .field-order {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    color: var(--ink-4);
+    text-align: center;
+  }
+  .field-name-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .field-name-main {
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .field-name-display {
+    font-size: 11px;
+    color: var(--ink-4);
+  }
+  .field-type-cell {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: var(--ink-3);
+  }
+  .field-bool-cell {
+    text-align: center;
+    font-size: 14px;
+  }
+  .field-bool-cell.yes { color: var(--green); font-weight: 700; }
+  .field-bool-cell.no { color: var(--ink-4); }
+  .field-actions-cell {
+    display: flex;
+    gap: 4px;
+    justify-content: flex-end;
+  }
+  .field-action-btn {
+    background: none;
+    border: none;
+    font-size: 11px;
+    color: var(--ink-4);
+    cursor: pointer;
+    padding: 3px 6px;
+  }
+  .field-action-btn:hover { color: var(--accent); }
+  .field-action-btn.delete:hover { color: var(--red); }
+
+  /* Relationship pills */
+  .rel-section {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 18px 22px;
+    margin-bottom: 14px;
+  }
+  .rel-section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .rel-section-title {
+    font-family: Georgia, serif;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--ink);
+  }
+  .rel-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    margin-right: 8px;
+    margin-bottom: 6px;
+    font-size: 12px;
+    color: var(--ink-2);
+  }
+  .rel-pill-arrow { color: var(--accent); font-weight: 700; }
+  .rel-pill-cardinality {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    color: var(--ink-4);
+  }
+
+  /* Expression Columns */
+  .expr-section {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 18px 22px;
+    margin-bottom: 14px;
+  }
+  .expr-section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .expr-section-title {
+    font-family: Georgia, serif;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--ink);
+  }
+  .expr-card {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    padding: 14px 18px;
+    margin-bottom: 10px;
+  }
+  .expr-card:last-child { margin-bottom: 0; }
+  .expr-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+  .expr-name {
+    font-family: Georgia, serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .expr-type {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    background: var(--surface);
+    color: var(--ink-3);
+    border: 1px solid var(--line);
+  }
+  .expr-formula {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--accent-2);
+    background: var(--surface);
+    padding: 8px 12px;
+    border-left: 3px solid var(--accent);
+    margin-bottom: 8px;
+    word-break: break-all;
+  }
+  .expr-deps {
+    font-size: 11px;
+    color: var(--ink-3);
+  }
+  .expr-deps-label {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-right: 6px;
+  }
+  .expr-dep-chip {
+    display: inline-block;
+    padding: 2px 6px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    margin-right: 4px;
+    color: var(--ink-2);
+  }
+
+  /* Standardized Lists */
+  .list-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 18px 22px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+  .list-card:hover {
+    border-color: var(--ink-4);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(10,10,10,0.06);
+  }
+  .list-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+  .list-name {
+    font-family: Georgia, serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .list-count {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+  .list-desc {
+    font-size: 12px;
+    color: var(--ink-3);
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+  .list-values-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .list-value-chip {
+    padding: 4px 10px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    font-size: 11px;
+    font-family: 'Courier New', monospace;
+    color: var(--ink-2);
+  }
+  .list-value-more {
+    padding: 4px 10px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    font-size: 11px;
+    color: var(--ink-4);
+  }
+
+  /* List Detail View */
+  .list-detail-header {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 24px 28px;
+    margin-bottom: 18px;
+  }
+  .list-detail-name {
+    font-family: Georgia, serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .list-detail-desc {
+    font-size: 13px;
+    color: var(--ink-3);
+    max-width: 600px;
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  .list-detail-stats {
+    display: flex;
+    gap: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+  }
+  .list-values-table {
+    background: var(--surface);
+    border: 1px solid var(--line);
+  }
+  .list-values-head {
+    display: grid;
+    grid-template-columns: 60px 1fr 200px 100px;
+    gap: 12px;
+    padding: 10px 18px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--ink-3);
+  }
+  .list-values-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 200px 100px;
+    gap: 12px;
+    padding: 10px 18px;
+    border-bottom: 1px solid var(--line);
+    font-size: 12px;
+    align-items: center;
+  }
+  .list-values-row:last-child { border-bottom: none; }
+  .list-value-index {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    color: var(--ink-4);
+    text-align: center;
+  }
+  .list-value-main {
+    font-family: 'Courier New', monospace;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .list-value-label {
+    font-size: 11px;
+    color: var(--ink-3);
+  }
+
+  /* Field binding indicator */
+  .field-list-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    background: #e8eef2;
+    color: var(--accent-2);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-left: 8px;
+  }
+
+  /* ===== Template Editor ===== */
+  .template-section {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    margin-bottom: 14px;
+  }
+  .template-section-head {
+    padding: 13px 20px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .template-section-name {
+    font-family: Georgia, serif;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--ink);
+  }
+  .template-card {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .template-card:last-child { border-bottom: none; }
+  .template-card:hover { background: var(--bg); }
+  .template-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .template-card-name {
+    font-weight: 500;
+    color: var(--ink);
+    font-size: 13px;
+  }
+  .template-card-meta {
+    font-size: 11px;
+    color: var(--ink-4);
+    display: flex;
+    gap: 12px;
+  }
+  .template-default-badge {
+    font-size: 9px;
+    padding: 2px 7px;
+    background: #e1f1e7;
+    color: var(--green);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+  }
+
+  /* Template editor modal */
+  .template-editor-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    min-height: 500px;
+    border-top: 1px solid var(--line);
+  }
+  .template-editor-left {
+    border-right: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+  }
+  .template-editor-right {
+    display: flex;
+    flex-direction: column;
+  }
+  .template-editor-pane-head {
+    padding: 10px 16px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--ink-3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .template-code-area {
+    flex: 1;
+    padding: 0;
+    border: none;
+    outline: none;
+    resize: none;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--ink);
+    background: var(--surface);
+    min-height: 400px;
+    width: 100%;
+  }
+  .template-preview-area {
+    flex: 1;
+    overflow: auto;
+    padding: 16px;
+    background: var(--bg);
+    min-height: 400px;
+  }
+  .template-field-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--line);
+    background: var(--bg);
+  }
+  .template-field-chip {
+    padding: 3px 8px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    color: var(--accent-2);
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .template-field-chip:hover {
+    border-color: var(--accent);
+    background: #fef6e8;
+  }
+
+  /* Chat panel for template design */
+  .chat-panel {
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    max-height: 300px;
+  }
+  .chat-panel-head {
+    padding: 10px 16px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--ink-3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 120px;
+  }
+  .chat-msg {
+    max-width: 85%;
+    padding: 8px 12px;
+    font-size: 12px;
+    line-height: 1.5;
+    border-radius: 8px;
+  }
+  .chat-msg.user {
+    align-self: flex-end;
+    background: var(--ink);
+    color: #fff;
+    border-bottom-right-radius: 2px;
+  }
+  .chat-msg.agent {
+    align-self: flex-start;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    color: var(--ink-2);
+    border-bottom-left-radius: 2px;
+  }
+  .chat-msg.system {
+    align-self: center;
+    background: transparent;
+    color: var(--ink-4);
+    font-size: 11px;
+    font-style: italic;
+  }
+  .chat-input-row {
+    display: flex;
+    gap: 8px;
+    padding: 10px 16px;
+    border-top: 1px solid var(--line);
+    background: var(--surface);
+  }
+  .chat-input-row input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--line-strong);
+    font-size: 12px;
+    outline: none;
+  }
+  .chat-input-row input:focus { border-color: var(--accent); }
+  .chat-send-btn {
+    padding: 8px 14px;
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    cursor: pointer;
+  }
+  .chat-send-btn:hover { background: var(--accent); }
+  .chat-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Full-width template editor modal */
+  .modal-panel-wide {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    width: 90%;
+    max-width: 1100px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 64px rgba(10,10,10,0.15);
+  }
+
+  /* ===== Unified Grid View ===== */
+  .grid-toolbar {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 12px 18px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .grid-toolbar-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--ink-3);
+  }
+  .grid-date-input {
+    padding: 7px 12px;
+    border: 1px solid var(--line-strong);
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+    color: var(--ink);
+    outline: none;
+    background: var(--surface);
+  }
+  .grid-date-input:focus { border-color: var(--accent); }
+  .grid-entity-select {
+    padding: 7px 12px;
+    border: 1px solid var(--line-strong);
+    font-size: 12px;
+    color: var(--ink);
+    outline: none;
+    background: var(--surface);
+  }
+  .grid-entity-select:focus { border-color: var(--accent); }
+  .grid-search-input {
+    padding: 7px 12px;
+    border: 1px solid var(--line-strong);
+    font-size: 12px;
+    color: var(--ink);
+    outline: none;
+    background: var(--surface);
+    min-width: 200px;
+  }
+  .grid-search-input:focus { border-color: var(--accent); }
+  .grid-count {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--ink-3);
+  }
+  .grid-count strong { color: var(--ink); font-weight: 600; }
+
+  .unified-grid-table {
+    background: var(--surface);
+    border: 1px solid var(--line);
+  }
+  .ug-head {
+    display: grid;
+    gap: 14px;
+    padding: 12px 18px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--ink-3);
+    align-items: center;
+  }
+  .ug-row {
+    display: grid;
+    gap: 14px;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--line);
+    font-size: 12px;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .ug-row:last-child { border-bottom: none; }
+  .ug-row:hover { background: var(--bg); }
+  .ug-entity-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    border: 1px solid;
+  }
+  .ug-date-cell {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: var(--ink-3);
+  }
 </style>
 </head>
 <body>
@@ -448,7 +1497,7 @@
 <script>
     let entities = {};
     let records = {};
-    let state = { view: 'landing', entity: null, recordId: null, expandedField: null };
+    let state = { view: 'landing', entity: null, recordId: null, expandedField: null, gridEntity: 'all', gridDate: '', gridSearch: '' };
 
     const sources = {
       bloomberg: { name: 'Bloomberg', hex: 'var(--src-bloomberg)' },
@@ -554,6 +1603,11 @@
       else if (state.view === 'precedence') app.innerHTML = renderPrecedence();
       else if (state.view === 'quality') app.innerHTML = renderQuality();
       else if (state.view === 'lists') app.innerHTML = renderLists();
+      else if (state.view === 'schema-builder') app.innerHTML = renderSchemaBuilder();
+      else if (state.view === 'schema-entity-detail') app.innerHTML = renderSchemaEntityDetail();
+      else if (state.view === 'standardized-lists') app.innerHTML = renderStandardizedLists();
+      else if (state.view === 'standardized-list-detail') app.innerHTML = renderStandardizedListDetail();
+      else if (state.view === 'grid-view') app.innerHTML = renderUnifiedGrid();
     }
 
     function fmt$(n) {
@@ -743,6 +1797,24 @@
           </div>
 
           <div class="nav-row">
+            <div class="nav-card" onclick="go('schema-builder')">
+              <div class="nav-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 17h7M17.5 14v7"/></svg>
+              </div>
+              <div>
+                <div class="nav-title">Schema Builder</div>
+                <div class="nav-desc">Design entities, fields, and relationships with star schema support.</div>
+              </div>
+            </div>
+            <div class="nav-card" onclick="go('grid-view')">
+              <div class="nav-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
+              </div>
+              <div>
+                <div class="nav-title">Data Grid</div>
+                <div class="nav-desc">View all entities in a unified grid with knowledge date filtering.</div>
+              </div>
+            </div>
             <div class="nav-card" onclick="go('precedence')">
               <div class="nav-icon">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h18M3 12h18M3 18h12"/><circle cx="5" cy="6" r="1.5" fill="currentColor"/><circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="5" cy="18" r="1.5" fill="currentColor"/></svg>
@@ -1164,6 +2236,1767 @@
                 </div>
               </div>
             `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // ===== Schema Builder =====
+    function renderSchemaBuilder() {
+      const schemaEntities = records.SchemaEntity || [];
+      const schemaFields = records.SchemaField || [];
+      const schemaRels = records.SchemaRelationship || [];
+
+      return `
+        <div class="view-fade">
+          <div class="crumbs">
+            <span class="crumb-link" onclick="go('landing')">Home</span>
+            <span class="sep">›</span>
+            <span class="crumb-current">Schema Builder</span>
+          </div>
+
+          <div class="page-header">
+            <div>
+              <div class="page-title">Schema Builder</div>
+              <div class="page-meta">${schemaEntities.length} entities · ${schemaFields.length} fields · ${schemaRels.length} relationships</div>
+            </div>
+            <div class="page-actions">
+              <button class="btn btn-primary" onclick="openEntityModal()">+ New Entity</button>
+            </div>
+          </div>
+
+          <div class="schema-canvas">
+            <div class="schema-grid">
+              ${schemaEntities.map(ent => {
+                const fields = schemaFields.filter(f => f.entity_id === ent.id);
+                const isDateDim = ent.is_date_dimension;
+                const relCount = schemaRels.filter(r => r.parent_entity_id === ent.id || r.child_entity_id === ent.id).length;
+                return `
+                  <div class="schema-entity-card ${isDateDim ? 'date-dim' : ''}" style="--card-accent: var(--accent);" onclick="go('schema-entity-detail', {schemaEntityId: '${ent.id}'})">
+                    <div class="schema-entity-head">
+                      <div>
+                        <div class="schema-entity-title">${ent.display_name || ent.name}</div>
+                        <div style="font-size: 11px; color: var(--ink-4); margin-top: 2px;">${ent.name}</div>
+                      </div>
+                      <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-end;">
+                        <span class="schema-entity-role ${ent.entity_role === 'fact' ? 'role-fact' : ent.entity_role === 'dimension' ? 'role-dimension' : ent.entity_role === 'bridge' ? 'role-bridge' : 'role-date-dim'}">${ent.entity_role || 'fact'}</span>
+                        ${isDateDim ? `<span class="schema-date-badge">📅 ${ent.date_granularity || 'daily'}</span>` : ''}
+                      </div>
+                    </div>
+                    <div class="schema-entity-fields">
+                      ${fields.slice(0, 5).map(f => `
+                        <div class="schema-field-item">
+                          <div class="schema-field-icon ${f.is_primary_key ? 'pk' : f.is_foreign_key ? 'fk' : ''}">${f.is_primary_key ? 'PK' : f.is_foreign_key ? 'FK' : '•'}</div>
+                          <div class="schema-field-name">${f.display_name || f.name}</div>
+                          <div class="schema-field-type">${f.field_type || 'string'}</div>
+                        </div>
+                      `).join('')}
+                      ${fields.length > 5 ? `<div style="padding: 6px 18px; font-size: 11px; color: var(--ink-4);">+${fields.length - 5} more fields</div>` : ''}
+                      ${fields.length === 0 ? `<div style="padding: 12px 18px; font-size: 12px; color: var(--ink-4); text-align: center;">No fields yet</div>` : ''}
+                    </div>
+                    <div class="schema-entity-footer">
+                      <div>${fields.length} fields</div>
+                      <div>${relCount} relationships</div>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+              <div class="schema-add-card" onclick="openEntityModal()">
+                <div class="schema-add-icon">+</div>
+                <div class="schema-add-label">Add Entity</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSchemaEntityDetail() {
+      const entityId = state.schemaEntityId;
+      const schemaEntities = records.SchemaEntity || [];
+      const schemaFields = records.SchemaField || [];
+      const schemaRels = records.SchemaRelationship || [];
+      const exprColumns = records.ExpressionColumn || [];
+      const stdLists = records.StandardizedList || [];
+      const fieldBindings = records.FieldListBinding || [];
+      
+      const entity = schemaEntities.find(e => e.id === entityId);
+      if (!entity) return '<div style="padding: 40px; text-align: center;">Entity not found</div>';
+
+      const fields = schemaFields.filter(f => f.entity_id === entityId).sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+      const parentRels = schemaRels.filter(r => r.child_entity_id === entityId);
+      const childRels = schemaRels.filter(r => r.parent_entity_id === entityId);
+      const entityExprCols = exprColumns.filter(e => e.entity_id === entityId).sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+
+      return `
+        <div class="view-fade">
+          <div class="crumbs">
+            <span class="crumb-link" onclick="go('landing')">Home</span>
+            <span class="sep">›</span>
+            <span class="crumb-link" onclick="go('schema-builder')">Schema Builder</span>
+            <span class="sep">›</span>
+            <span class="crumb-current">${entity.display_name || entity.name}</span>
+          </div>
+
+          <div class="entity-detail-header">
+            <div class="entity-detail-meta">
+              <span class="schema-entity-role ${entity.entity_role === 'fact' ? 'role-fact' : entity.entity_role === 'dimension' ? 'role-dimension' : entity.entity_role === 'bridge' ? 'role-bridge' : 'role-date-dim'}">${entity.entity_role || 'fact'}</span>
+              ${entity.is_date_dimension ? `<span class="schema-date-badge">📅 ${entity.date_granularity || 'daily'}</span>` : ''}
+            </div>
+            <div class="entity-detail-name">${entity.display_name || entity.name}</div>
+            <div class="entity-detail-desc">${entity.description || 'No description'}</div>
+            <div class="entity-detail-stats">
+              <div class="entity-stat">
+                <div class="entity-stat-val">${fields.length}</div>
+                <div class="entity-stat-lbl">Fields</div>
+              </div>
+              <div class="entity-stat">
+                <div class="entity-stat-val">${entityExprCols.length}</div>
+                <div class="entity-stat-lbl">Expressions</div>
+              </div>
+              <div class="entity-stat">
+                <div class="entity-stat-val">${parentRels.length + childRels.length}</div>
+                <div class="entity-stat-lbl">Relationships</div>
+              </div>
+            </div>
+          </div>
+
+          ${parentRels.length > 0 || childRels.length > 0 ? `
+            <div class="rel-section">
+              <div class="rel-section-head">
+                <div class="rel-section-title">Relationships</div>
+                <button class="btn btn-sm" onclick="openRelationshipModal('${entityId}')">+ Add Relationship</button>
+              </div>
+              ${parentRels.map(rel => {
+                const parent = schemaEntities.find(e => e.id === rel.parent_entity_id);
+                return `
+                  <div class="rel-pill">
+                    <span>${parent ? parent.display_name : 'Unknown'}</span>
+                    <span class="rel-pill-arrow">→</span>
+                    <span>${entity.display_name}</span>
+                    <span class="rel-pill-cardinality">${rel.cardinality || '1:N'}</span>
+                  </div>
+                `;
+              }).join('')}
+              ${childRels.map(rel => {
+                const child = schemaEntities.find(e => e.id === rel.child_entity_id);
+                return `
+                  <div class="rel-pill">
+                    <span>${entity.display_name}</span>
+                    <span class="rel-pill-arrow">→</span>
+                    <span>${child ? child.display_name : 'Unknown'}</span>
+                    <span class="rel-pill-cardinality">${rel.cardinality || '1:N'}</span>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          ` : `
+            <div class="rel-section">
+              <div class="rel-section-head">
+                <div class="rel-section-title">Relationships</div>
+                <button class="btn btn-sm" onclick="openRelationshipModal('${entityId}')">+ Add Relationship</button>
+              </div>
+              <div style="padding: 20px; text-align: center; color: var(--ink-4); font-size: 12px;">No relationships defined yet</div>
+            </div>
+          `}
+
+          <div class="field-table">
+            <div class="field-table-head">
+              <div>#</div>
+              <div>Field Name</div>
+              <div>Type</div>
+              <div style="text-align: center;">Required</div>
+              <div style="text-align: center;">PK</div>
+              <div style="text-align: center;">FK</div>
+              <div>References</div>
+              <div>Actions</div>
+            </div>
+            ${fields.map((f, idx) => `
+              <div class="field-table-row">
+                <div class="field-order">${idx + 1}</div>
+                <div class="field-name-cell">
+                  <div class="field-name-main">${f.name}</div>
+                  ${f.display_name && f.display_name !== f.name ? `<div class="field-name-display">${f.display_name}</div>` : ''}
+                </div>
+                <div class="field-type-cell">${f.field_type || 'string'}</div>
+                <div class="field-bool-cell ${f.is_required ? 'yes' : 'no'}">${f.is_required ? '✓' : '—'}</div>
+                <div class="field-bool-cell ${f.is_primary_key ? 'yes' : 'no'}">${f.is_primary_key ? '✓' : '—'}</div>
+                <div class="field-bool-cell ${f.is_foreign_key ? 'yes' : 'no'}">${f.is_foreign_key ? '✓' : '—'}</div>
+                <div style="font-size: 11px; color: var(--ink-3);">${f.references_entity || '—'}</div>
+                <div class="field-actions-cell">
+                  <button class="field-action-btn" onclick="openFieldModal('${entityId}', '${f.id}')">Edit</button>
+                  <button class="field-action-btn" onclick="openBindListModal('${f.id}')">📋</button>
+                  <button class="field-action-btn delete" onclick="deleteField('${f.id}')">Delete</button>
+                </div>
+              </div>
+            `).join('')}
+            ${fields.length === 0 ? `
+              <div style="padding: 40px; text-align: center; color: var(--ink-4);">
+                No fields yet. <button class="btn btn-sm" onclick="openFieldModal('${entityId}')" style="margin-left: 8px;">+ Add First Field</button>
+              </div>
+            ` : ''}
+          </div>
+
+          <div style="margin-top: 18px; text-align: center;">
+            <button class="btn btn-primary" onclick="openFieldModal('${entityId}')">+ Add Field</button>
+          </div>
+
+          <div class="expr-section" style="margin-top: 28px;">
+            <div class="expr-section-head">
+              <div class="expr-section-title">Expression Columns</div>
+              <button class="btn btn-sm" onclick="openExpressionModal('${entityId}')">+ Add Expression</button>
+            </div>
+            ${entityExprCols.length > 0 ? entityExprCols.map(expr => `
+              <div class="expr-card">
+                <div class="expr-head">
+                  <div>
+                    <div class="expr-name">${expr.display_name || expr.name}</div>
+                    <div style="font-size: 11px; color: var(--ink-4); margin-top: 2px;">${expr.name}</div>
+                  </div>
+                  <div style="display: flex; gap: 6px; align-items: center;">
+                    <span class="expr-type">${expr.output_type || 'string'}</span>
+                    <button class="field-action-btn" onclick="openExpressionModal('${entityId}', '${expr.id}')">Edit</button>
+                    <button class="field-action-btn delete" onclick="deleteExpression('${expr.id}')">Delete</button>
+                  </div>
+                </div>
+                <div class="expr-formula">${expr.expression}</div>
+                ${expr.depends_on_fields ? `
+                  <div class="expr-deps">
+                    <span class="expr-deps-label">Depends on:</span>
+                    ${expr.depends_on_fields.split(',').map(f => `<span class="expr-dep-chip">${f.trim()}</span>`).join('')}
+                  </div>
+                ` : ''}
+                ${expr.description ? `<div style="font-size: 12px; color: var(--ink-3); margin-top: 8px;">${expr.description}</div>` : ''}
+              </div>
+            `).join('') : `
+              <div style="padding: 20px; text-align: center; color: var(--ink-4); font-size: 12px;">
+                No expression columns defined yet
+              </div>
+            `}
+          </div>
+
+          <div class="expr-section" style="margin-top: 28px;">
+            <div class="expr-section-head">
+              <div class="expr-section-title">Link Types</div>
+              <button class="btn btn-sm" onclick="openLinkTypeModal('${entityId}')">+ Add Link Type</button>
+            </div>
+            ${(() => {
+              const linkTypes = (records.LinkType || []).filter(lt => lt.source_entity_id === entityId || lt.target_entity_id === entityId);
+              return linkTypes.length > 0 ? linkTypes.map(lt => {
+                const sourceEntity = schemaEntities.find(e => e.id === lt.source_entity_id);
+                const targetEntity = schemaEntities.find(e => e.id === lt.target_entity_id);
+                const isSource = lt.source_entity_id === entityId;
+                return `
+                  <div class="expr-card">
+                    <div class="expr-head">
+                      <div>
+                        <div class="expr-name">${lt.display_name || lt.name}</div>
+                        <div style="font-size: 11px; color: var(--ink-4); margin-top: 2px;">${lt.name}</div>
+                      </div>
+                      <div style="display: flex; gap: 6px; align-items: center;">
+                        <span class="expr-type">${lt.cardinality || 'N:M'}</span>
+                        <button class="field-action-btn" onclick="openLinkTypeModal('${entityId}', '${lt.id}')">Edit</button>
+                        <button class="field-action-btn delete" onclick="deleteLinkType('${lt.id}')">Delete</button>
+                      </div>
+                    </div>
+                    <div style="font-size: 12px; color: var(--ink-3); margin-top: 8px;">
+                      ${isSource ? 'Links to' : 'Linked from'}: <strong>${isSource ? (targetEntity?.display_name || 'Unknown') : (sourceEntity?.display_name || 'Unknown')}</strong>
+                      ${lt.is_bidirectional ? ' <span style="color: var(--accent);">↔ Bidirectional</span>' : ''}
+                    </div>
+                    ${lt.description ? `<div style="font-size: 12px; color: var(--ink-3); margin-top: 8px;">${lt.description}</div>` : ''}
+                  </div>
+                `;
+              }).join('') : `
+                <div style="padding: 20px; text-align: center; color: var(--ink-4); font-size: 12px;">
+                  No link types defined yet
+                </div>
+              `;
+            })()}
+          </div>
+
+          ${renderTemplateSection(entityId, fields)}
+        </div>
+      `;
+    }
+
+    function openEntityModal(editId = null) {
+      const schemaEntities = records.SchemaEntity || [];
+      const entity = editId ? schemaEntities.find(e => e.id === editId) : null;
+      const parentTypes = schemaEntities.filter(e => e.id !== editId);
+      
+      const modal = document.createElement('div');
+      modal.className = 'modal-overlay';
+      modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+      
+      modal.innerHTML = `
+        <div class="modal-panel">
+          <div class="modal-head">
+            <div class="modal-title">${entity ? 'Edit Entity' : 'New Entity'}</div>
+            <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Entity Name *</label>
+              <input type="text" id="entity-name" value="${entity?.name || ''}" placeholder="e.g., Fund, Security, Position">
+              <div class="hint">Technical name (lowercase, no spaces)</div>
+            </div>
+            <div class="form-group">
+              <label>Display Name</label>
+              <input type="text" id="entity-display-name" value="${entity?.display_name || ''}" placeholder="e.g., Investment Fund">
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <textarea id="entity-description" placeholder="What does this entity represent?">${entity?.description || ''}</textarea>
+            </div>
+            <div class="form-row-2">
+              <div class="form-group">
+                <label>Entity Role *</label>
+                <select id="entity-role">
+                  <option value="fact" ${entity?.entity_role === 'fact' ? 'selected' : ''}>Fact Table</option>
+                  <option value="dimension" ${entity?.entity_role === 'dimension' ? 'selected' : ''}>Dimension</option>
+                  <option value="bridge" ${entity?.entity_role === 'bridge' ? 'selected' : ''}>Bridge Table</option>
+                  <option value="date_dimension" ${entity?.entity_role === 'date_dimension' ? 'selected' : ''}>Date Dimension</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Date Granularity</label>
+                <select id="entity-date-gran">
+                  <option value="daily" ${entity?.date_granularity === 'daily' ? 'selected' : ''}>Daily</option>
+                  <option value="weekly" ${entity?.date_granularity === 'weekly' ? 'selected' : ''}>Weekly</option>
+                  <option value="monthly" ${entity?.date_granularity === 'monthly' ? 'selected' : ''}>Monthly</option>
+                  <option value="quarterly" ${entity?.date_granularity === 'quarterly' ? 'selected' : ''}>Quarterly</option>
+                  <option value="yearly" ${entity?.date_granularity === 'yearly' ? 'selected' : ''}>Yearly</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Parent Type (Inheritance)</label>
+              <select id="entity-parent-type">
+                <option value="">— None (Base Type) —</option>
+                ${parentTypes.map(pt => `
+                  <option value="${pt.id}" ${entity?.parent_type_id === pt.id ? 'selected' : ''}>${pt.display_name || pt.name}</option>
+                `).join('')}
+              </select>
+              <div class="hint">Inherit fields and relationships from a parent entity type</div>
+            </div>
+            <div class="form-group">
+              <label class="form-check">
+                <input type="checkbox" id="entity-is-abstract" ${entity?.is_abstract ? 'checked' : ''}>
+                <span class="form-check-label">Abstract type</span>
+              </label>
+              <div class="hint">Abstract types cannot have records — they only define structure for subtypes</div>
+            </div>
+            <div class="form-group">
+              <label class="form-check">
+                <input type="checkbox" id="entity-is-date-dim" ${entity?.is_date_dimension ? 'checked' : ''}>
+                <span class="form-check-label">This is a date dimension table</span>
+              </label>
+              <div class="hint">Date dimensions track time-based data at specific granularities</div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveEntity('${editId || ''}')">${entity ? 'Update' : 'Create'}</button>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+    }
+
+    async function saveEntity(editId) {
+      const name = document.getElementById('entity-name').value.trim();
+      const displayName = document.getElementById('entity-display-name').value.trim();
+      const description = document.getElementById('entity-description').value.trim();
+      const role = document.getElementById('entity-role').value;
+      const dateGran = document.getElementById('entity-date-gran').value;
+      const parentTypeId = document.getElementById('entity-parent-type').value;
+      const isAbstract = document.getElementById('entity-is-abstract').checked;
+      const isDateDim = document.getElementById('entity-is-date-dim').checked;
+
+      if (!name) {
+        alert('Entity name is required');
+        return;
+      }
+
+      const data = {
+        name,
+        display_name: displayName || name,
+        description,
+        entity_role: role,
+        parent_type_id: parentTypeId,
+        is_abstract: isAbstract,
+        date_granularity: dateGran,
+        is_date_dimension: isDateDim,
+        created_at: new Date().toISOString()
+      };
+
+      try {
+        if (editId) {
+          await apiUpdateRecord('SchemaEntity', editId, data);
+        } else {
+          await apiCreateRecord('SchemaEntity', data);
+        }
+        document.querySelector('.modal-overlay').remove();
+        render();
+      } catch (err) {
+        alert('Failed to save entity: ' + err.message);
+      }
+    }
+
+    function openFieldModal(entityId, editId = null) {
+      const schemaFields = records.SchemaField || [];
+      const schemaEntities = records.SchemaEntity || [];
+      const field = editId ? schemaFields.find(f => f.id === editId) : null;
+      
+      const modal = document.createElement('div');
+      modal.className = 'modal-overlay';
+      modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+      
+      modal.innerHTML = `
+        <div class="modal-panel">
+          <div class="modal-head">
+            <div class="modal-title">${field ? 'Edit Field' : 'New Field'}</div>
+            <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Field Name *</label>
+              <input type="text" id="field-name" value="${field?.name || ''}" placeholder="e.g., fund_id, name, nav">
+              <div class="hint">Technical name (lowercase, underscores)</div>
+            </div>
+            <div class="form-group">
+              <label>Display Name</label>
+              <input type="text" id="field-display-name" value="${field?.display_name || ''}" placeholder="e.g., Fund ID, Net Asset Value">
+            </div>
+            <div class="form-row-2">
+              <div class="form-group">
+                <label>Field Type *</label>
+                <select id="field-type">
+                  <option value="string" ${field?.field_type === 'string' ? 'selected' : ''}>String</option>
+                  <option value="number" ${field?.field_type === 'number' ? 'selected' : ''}>Number</option>
+                  <option value="boolean" ${field?.field_type === 'boolean' ? 'selected' : ''}>Boolean</option>
+                  <option value="date" ${field?.field_type === 'date' ? 'selected' : ''}>Date</option>
+                  <option value="datetime" ${field?.field_type === 'datetime' ? 'selected' : ''}>DateTime</option>
+                  <option value="json" ${field?.field_type === 'json' ? 'selected' : ''}>JSON</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Display Order</label>
+                <input type="number" id="field-order" value="${field?.display_order || 0}" min="0">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Validation Rule</label>
+              <input type="text" id="field-validation" value="${field?.validation_rule || ''}" placeholder="e.g., required, min:0, max:100">
+            </div>
+            <div class="form-group">
+              <label>Default Value</label>
+              <input type="text" id="field-default" value="${field?.default_value || ''}" placeholder="e.g., 'active', 0, null">
+            </div>
+            <div class="form-group">
+              <label class="form-check">
+                <input type="checkbox" id="field-required" ${field?.is_required ? 'checked' : ''}>
+                <span class="form-check-label">Required field</span>
+              </label>
+            </div>
+            <div class="form-group">
+              <label class="form-check">
+                <input type="checkbox" id="field-pk" ${field?.is_primary_key ? 'checked' : ''} onchange="document.getElementById('field-fk').disabled = this.checked">
+                <span class="form-check-label">Primary key</span>
+              </label>
+            </div>
+            <div class="form-group">
+              <label class="form-check">
+                <input type="checkbox" id="field-fk" ${field?.is_foreign_key ? 'checked' : ''} onchange="document.getElementById('field-pk').disabled = this.checked">
+                <span class="form-check-label">Foreign key</span>
+              </label>
+            </div>
+            <div class="form-group" id="field-ref-group" style="${field?.is_foreign_key ? '' : 'display: none;'}">
+              <label>References Entity</label>
+              <select id="field-references">
+                <option value="">— Select entity —</option>
+                ${schemaEntities.map(e => `<option value="${e.id}" ${field?.references_entity === e.id ? 'selected' : ''}>${e.display_name}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Applies To Subtypes</label>
+              <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;">
+                ${schemaEntities.filter(e => e.parent_type_id === entityId).map(subtype => `
+                  <label style="display: flex; align-items: center; gap: 4px; padding: 4px 8px; background: var(--bg); border: 1px solid var(--line); font-size: 11px; cursor: pointer;">
+                    <input type="checkbox" class="field-subtype-check" value="${subtype.id}" ${field?.applies_to_type_ids?.includes(subtype.id) ? 'checked' : ''}>
+                    ${subtype.display_name || subtype.name}
+                  </label>
+                `).join('')}
+              </div>
+              <div class="hint">Leave empty to apply to all subtypes, or select specific subtypes</div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveField('${entityId}', '${editId || ''}')">${field ? 'Update' : 'Create'}</button>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      // Show/hide references field based on FK checkbox
+      document.getElementById('field-fk').addEventListener('change', (e) => {
+        document.getElementById('field-ref-group').style.display = e.target.checked ? '' : 'none';
+      });
+    }
+
+    async function saveField(entityId, editId) {
+      const name = document.getElementById('field-name').value.trim();
+      const displayName = document.getElementById('field-display-name').value.trim();
+      const fieldType = document.getElementById('field-type').value;
+      const displayOrder = parseInt(document.getElementById('field-order').value) || 0;
+      const validation = document.getElementById('field-validation').value.trim();
+      const defaultValue = document.getElementById('field-default').value.trim();
+      const isRequired = document.getElementById('field-required').checked;
+      const isPK = document.getElementById('field-pk').checked;
+      const isFK = document.getElementById('field-fk').checked;
+      const referencesEntity = document.getElementById('field-references').value;
+      
+      const subtypeIds = Array.from(document.querySelectorAll('.field-subtype-check:checked')).map(cb => cb.value);
+      const appliesToTypeIds = subtypeIds.join(',');
+
+      if (!name) {
+        alert('Field name is required');
+        return;
+      }
+
+      const data = {
+        entity_id: entityId,
+        name,
+        display_name: displayName || name,
+        field_type: fieldType,
+        display_order: displayOrder,
+        validation_rule: validation,
+        default_value: defaultValue,
+        is_required: isRequired,
+        is_primary_key: isPK,
+        is_foreign_key: isFK,
+        references_entity: isFK ? referencesEntity : '',
+        applies_to_type_ids: appliesToTypeIds
+      };
+
+      try {
+        if (editId) {
+          await apiUpdateRecord('SchemaField', editId, data);
+        } else {
+          await apiCreateRecord('SchemaField', data);
+        }
+        document.querySelector('.modal-overlay').remove();
+        render();
+      } catch (err) {
+        alert('Failed to save field: ' + err.message);
+      }
+    }
+
+    async function deleteField(fieldId) {
+      if (!confirm('Delete this field? This cannot be undone.')) return;
+      try {
+        await apiDeleteRecord('SchemaField', fieldId);
+        render();
+      } catch (err) {
+        alert('Failed to delete field: ' + err.message);
+      }
+    }
+
+    function openExpressionModal(entityId, editId = null) {
+      const exprColumns = records.ExpressionColumn || [];
+      const schemaFields = records.SchemaField || [];
+      const expr = editId ? exprColumns.find(e => e.id === editId) : null;
+      const entityFields = schemaFields.filter(f => f.entity_id === entityId);
+      
+      const modal = document.createElement('div');
+      modal.className = 'modal-overlay';
+      modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+      
+      modal.innerHTML = `
+        <div class="modal-panel">
+          <div class="modal-head">
+            <div class="modal-title">${expr ? 'Edit Expression' : 'New Expression Column'}</div>
+            <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Expression Name *</label>
+              <input type="text" id="expr-name" value="${expr?.name || ''}" placeholder="e.g., market_value, total_return">
+              <div class="hint">Technical name (lowercase, underscores)</div>
+            </div>
+            <div class="form-group">
+              <label>Display Name</label>
+              <input type="text" id="expr-display-name" value="${expr?.display_name || ''}" placeholder="e.g., Market Value, Total Return">
+            </div>
+            <div class="form-group">
+              <label>Expression *</label>
+              <textarea id="expr-expression" placeholder="e.g., par_amount * price / 100" rows="3">${expr?.expression || ''}</textarea>
+              <div class="hint">Use field names from this entity. Supports arithmetic, string functions, and conditionals.</div>
+            </div>
+            <div class="form-row-2">
+              <div class="form-group">
+                <label>Output Type</label>
+                <select id="expr-output-type">
+                  <option value="string" ${expr?.output_type === 'string' ? 'selected' : ''}>String</option>
+                  <option value="number" ${expr?.output_type === 'number' ? 'selected' : ''}>Number</option>
+                  <option value="boolean" ${expr?.output_type === 'boolean' ? 'selected' : ''}>Boolean</option>
+                  <option value="date" ${expr?.output_type === 'date' ? 'selected' : ''}>Date</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Display Order</label>
+                <input type="number" id="expr-order" value="${expr?.display_order || 0}" min="0">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Depends On Fields</label>
+              <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;">
+                ${entityFields.map(f => `
+                  <label style="display: flex; align-items: center; gap: 4px; padding: 4px 8px; background: var(--bg); border: 1px solid var(--line); font-size: 11px; cursor: pointer;">
+                    <input type="checkbox" class="expr-dep-check" value="${f.name}" ${expr?.depends_on_fields?.includes(f.name) ? 'checked' : ''}>
+                    ${f.name}
+                  </label>
+                `).join('')}
+              </div>
+              <div class="hint">Select fields this expression depends on</div>
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <textarea id="expr-description" placeholder="What does this expression calculate?" rows="2">${expr?.description || ''}</textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-check">
+                <input type="checkbox" id="expr-is-active" ${expr?.is_active !== false ? 'checked' : ''}>
+                <span class="form-check-label">Active</span>
+              </label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveExpression('${entityId}', '${editId || ''}')">${expr ? 'Update' : 'Create'}</button>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+    }
+
+    async function saveExpression(entityId, editId) {
+      const name = document.getElementById('expr-name').value.trim();
+      const displayName = document.getElementById('expr-display-name').value.trim();
+      const expression = document.getElementById('expr-expression').value.trim();
+      const outputType = document.getElementById('expr-output-type').value;
+      const displayOrder = parseInt(document.getElementById('expr-order').value) || 0;
+      const description = document.getElementById('expr-description').value.trim();
+      const isActive = document.getElementById('expr-is-active').checked;
+      
+      const deps = Array.from(document.querySelectorAll('.expr-dep-check:checked')).map(cb => cb.value);
+      const dependsOnFields = deps.join(',');
+
+      if (!name || !expression) {
+        alert('Name and expression are required');
+        return;
+      }
+
+      const data = {
+        entity_id: entityId,
+        name,
+        display_name: displayName || name,
+        expression,
+        output_type: outputType,
+        display_order: displayOrder,
+        description,
+        depends_on_fields: dependsOnFields,
+        is_active: isActive
+      };
+
+      try {
+        if (editId) {
+          await apiUpdateRecord('ExpressionColumn', editId, data);
+        } else {
+          await apiCreateRecord('ExpressionColumn', data);
+        }
+        document.querySelector('.modal-overlay').remove();
+        render();
+      } catch (err) {
+        alert('Failed to save expression: ' + err.message);
+      }
+    }
+
+    async function deleteExpression(exprId) {
+      if (!confirm('Delete this expression? This cannot be undone.')) return;
+      try {
+        await apiDeleteRecord('ExpressionColumn', exprId);
+        render();
+      } catch (err) {
+        alert('Failed to delete expression: ' + err.message);
+      }
+    }
+
+    function openLinkTypeModal(entityId, editId = null) {
+      const linkTypes = records.LinkType || [];
+      const schemaEntities = records.SchemaEntity || [];
+      const linkType = editId ? linkTypes.find(lt => lt.id === editId) : null;
+      
+      const modal = document.createElement('div');
+      modal.className = 'modal-overlay';
+      modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+      
+      modal.innerHTML = `
+        <div class="modal-panel">
+          <div class="modal-head">
+            <div class="modal-title">${linkType ? 'Edit Link Type' : 'New Link Type'}</div>
+            <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Link Type Name *</label>
+              <input type="text" id="link-type-name" value="${linkType?.name || ''}" placeholder="e.g., related_to, managed_by, attached_to">
+              <div class="hint">Technical name (lowercase, underscores)</div>
+            </div>
+            <div class="form-group">
+              <label>Display Name</label>
+              <input type="text" id="link-type-display-name" value="${linkType?.display_name || ''}" placeholder="e.g., Related To, Managed By">
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <textarea id="link-type-description" placeholder="What does this link represent?" rows="2">${linkType?.description || ''}</textarea>
+            </div>
+            <div class="form-row-2">
+              <div class="form-group">
+                <label>Source Entity *</label>
+                <select id="link-type-source">
+                  ${schemaEntities.map(e => `<option value="${e.id}" ${linkType?.source_entity_id === e.id ? 'selected' : (e.id === entityId ? 'selected' : '')}>${e.display_name || e.name}</option>`).join('')}
+                </select>
+                <div class="hint">Entity that initiates the link</div>
+              </div>
+              <div class="form-group">
+                <label>Target Entity *</label>
+                <select id="link-type-target">
+                  ${schemaEntities.map(e => `<option value="${e.id}" ${linkType?.target_entity_id === e.id ? 'selected' : ''}>${e.display_name || e.name}</option>`).join('')}
+                </select>
+                <div class="hint">Entity that is linked to</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Cardinality</label>
+              <select id="link-type-cardinality">
+                <option value="1:1" ${linkType?.cardinality === '1:1' ? 'selected' : ''}>One to One (1:1)</option>
+                <option value="1:N" ${linkType?.cardinality === '1:N' ? 'selected' : ''}>One to Many (1:N)</option>
+                <option value="N:1" ${linkType?.cardinality === 'N:1' ? 'selected' : ''}>Many to One (N:1)</option>
+                <option value="N:M" ${!linkType?.cardinality || linkType?.cardinality === 'N:M' ? 'selected' : ''}>Many to Many (N:M)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-check">
+                <input type="checkbox" id="link-type-bidirectional" ${linkType?.is_bidirectional ? 'checked' : ''}>
+                <span class="form-check-label">Bidirectional</span>
+              </label>
+              <div class="hint">If checked, the link can be traversed in both directions</div>
+            </div>
+            <div class="form-group">
+              <label class="form-check">
+                <input type="checkbox" id="link-type-is-active" ${linkType?.is_active !== false ? 'checked' : ''}>
+                <span class="form-check-label">Active</span>
+              </label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveLinkType('${entityId}', '${editId || ''}')">${linkType ? 'Update' : 'Create'}</button>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+    }
+
+    async function saveLinkType(entityId, editId) {
+      const name = document.getElementById('link-type-name').value.trim();
+      const displayName = document.getElementById('link-type-display-name').value.trim();
+      const description = document.getElementById('link-type-description').value.trim();
+      const sourceEntityId = document.getElementById('link-type-source').value;
+      const targetEntityId = document.getElementById('link-type-target').value;
+      const cardinality = document.getElementById('link-type-cardinality').value;
+      const isBidirectional = document.getElementById('link-type-bidirectional').checked;
+      const isActive = document.getElementById('link-type-is-active').checked;
+
+      if (!name || !sourceEntityId || !targetEntityId) {
+        alert('Name, source entity, and target entity are required');
+        return;
+      }
+
+      const data = {
+        name,
+        display_name: displayName || name,
+        description,
+        source_entity_id: sourceEntityId,
+        target_entity_id: targetEntityId,
+        cardinality,
+        is_bidirectional: isBidirectional,
+        is_active: isActive,
+        created_at: new Date().toISOString()
+      };
+
+      try {
+        if (editId) {
+          await apiUpdateRecord('LinkType', editId, data);
+        } else {
+          await apiCreateRecord('LinkType', data);
+        }
+        document.querySelector('.modal-overlay').remove();
+        render();
+      } catch (err) {
+        alert('Failed to save link type: ' + err.message);
+      }
+    }
+
+    async function deleteLinkType(linkTypeId) {
+      if (!confirm('Delete this link type? This cannot be undone.')) return;
+      try {
+        await apiDeleteRecord('LinkType', linkTypeId);
+        render();
+      } catch (err) {
+        alert('Failed to delete link type: ' + err.message);
+      }
+    }
+
+    function openBindListModal(fieldId) {
+      const stdLists = records.StandardizedList || [];
+      const fieldBindings = records.FieldListBinding || [];
+      const binding = fieldBindings.find(b => b.field_id === fieldId);
+      
+      const modal = document.createElement('div');
+      modal.className = 'modal-overlay';
+      modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+      
+      modal.innerHTML = `
+        <div class="modal-panel">
+          <div class="modal-head">
+            <div class="modal-title">Bind Standardized List</div>
+            <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Select List</label>
+              <select id="bind-list-id">
+                <option value="">— No list —</option>
+                ${stdLists.filter(l => l.is_active !== false).map(l => `
+                  <option value="${l.id}" ${binding?.list_id === l.id ? 'selected' : ''}>${l.display_name} (${l.name})</option>
+                `).join('')}
+              </select>
+              <div class="hint">Bind this field to a standardized list for data normalization</div>
+            </div>
+            <div class="form-group">
+              <label class="form-check">
+                <input type="checkbox" id="bind-is-required" ${binding?.is_required ? 'checked' : ''}>
+                <span class="form-check-label">Require value from list</span>
+              </label>
+              <div class="hint">If checked, field values must come from the selected list</div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveBinding('${fieldId}')">Save</button>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+    }
+
+    async function saveBinding(fieldId) {
+      const listId = document.getElementById('bind-list-id').value;
+      const isRequired = document.getElementById('bind-is-required').checked;
+      
+      const fieldBindings = records.FieldListBinding || [];
+      const existingBinding = fieldBindings.find(b => b.field_id === fieldId);
+
+      try {
+        if (!listId) {
+          // Remove binding if no list selected
+          if (existingBinding) {
+            await apiDeleteRecord('FieldListBinding', existingBinding.id);
+          }
+        } else if (existingBinding) {
+          // Update existing binding
+          await apiUpdateRecord('FieldListBinding', existingBinding.id, {
+            list_id: listId,
+            is_required: isRequired
+          });
+        } else {
+          // Create new binding
+          await apiCreateRecord('FieldListBinding', {
+            field_id: fieldId,
+            list_id: listId,
+            is_required: isRequired
+          });
+        }
+        document.querySelector('.modal-overlay').remove();
+        render();
+      } catch (err) {
+        alert('Failed to save binding: ' + err.message);
+      }
+    }
+
+    function renderStandardizedLists() {
+      const stdLists = records.StandardizedList || [];
+      const fieldBindings = records.FieldListBinding || [];
+
+      return `
+        <div class="view-fade">
+          <div class="crumbs">
+            <span class="crumb-link" onclick="go('landing')">Home</span>
+            <span class="sep">›</span>
+            <span class="crumb-current">Standardized Lists</span>
+          </div>
+
+          <div class="page-header">
+            <div>
+              <div class="page-title">Standardized Lists</div>
+              <div class="page-meta">${stdLists.length} lists defined</div>
+            </div>
+            <div class="page-actions">
+              <button class="btn btn-primary" onclick="openListModal()">+ New List</button>
+            </div>
+          </div>
+
+          ${stdLists.length > 0 ? stdLists.map(list => {
+            const values = list.values ? list.values.split(',').map(v => v.trim()) : [];
+            const bindingCount = fieldBindings.filter(b => b.list_id === list.id).length;
+            return `
+              <div class="list-card" onclick="go('standardized-list-detail', {listId: '${list.id}'})">
+                <div class="list-head">
+                  <div>
+                    <div class="list-name">${list.display_name || list.name}</div>
+                    <div style="font-size: 11px; color: var(--ink-4); margin-top: 2px;">${list.name}</div>
+                  </div>
+                  <div class="list-count">${values.length} values · ${bindingCount} fields bound</div>
+                </div>
+                ${list.description ? `<div class="list-desc">${list.description}</div>` : ''}
+                <div class="list-values-preview">
+                  ${values.slice(0, 8).map(v => `<span class="list-value-chip">${v}</span>`).join('')}
+                  ${values.length > 8 ? `<span class="list-value-more">+${values.length - 8} more</span>` : ''}
+                </div>
+              </div>
+            `;
+          }).join('') : `
+            <div style="padding: 60px 28px; text-align: center; color: var(--ink-3);">
+              <div style="font-size: 48px; margin-bottom: 16px;">📋</div>
+              <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px; color: var(--ink-2);">No Standardized Lists</div>
+              <div style="max-width: 500px; margin: 0 auto; line-height: 1.6;">
+                Create controlled vocabularies to normalize data across your entities. 
+                Examples: currency codes, security types, country codes, status values.
+              </div>
+            </div>
+          `}
+        </div>
+      `;
+    }
+
+    function renderStandardizedListDetail() {
+      const listId = state.listId;
+      const stdLists = records.StandardizedList || [];
+      const fieldBindings = records.FieldListBinding || [];
+      const schemaFields = records.SchemaField || [];
+      
+      const list = stdLists.find(l => l.id === listId);
+      if (!list) return '<div style="padding: 40px; text-align: center;">List not found</div>';
+
+      const values = list.values ? list.values.split(',').map(v => v.trim()) : [];
+      const boundFields = fieldBindings
+        .filter(b => b.list_id === listId)
+        .map(b => {
+          const field = schemaFields.find(f => f.id === b.field_id);
+          return { ...b, field };
+        })
+        .filter(b => b.field);
+
+      return `
+        <div class="view-fade">
+          <div class="crumbs">
+            <span class="crumb-link" onclick="go('landing')">Home</span>
+            <span class="sep">›</span>
+            <span class="crumb-link" onclick="go('standardized-lists')">Standardized Lists</span>
+            <span class="sep">›</span>
+            <span class="crumb-current">${list.display_name || list.name}</span>
+          </div>
+
+          <div class="list-detail-header">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <div>
+                <div class="list-detail-name">${list.display_name || list.name}</div>
+                <div style="font-size: 11px; color: var(--ink-4); margin-bottom: 8px;">${list.name}</div>
+                ${list.description ? `<div class="list-detail-desc">${list.description}</div>` : ''}
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button class="btn btn-sm" onclick="openListModal('${listId}')">Edit</button>
+                <button class="btn btn-sm" onclick="deleteList('${listId}')">Delete</button>
+              </div>
+            </div>
+            <div class="list-detail-stats">
+              <div class="entity-stat">
+                <div class="entity-stat-val">${values.length}</div>
+                <div class="entity-stat-lbl">Values</div>
+              </div>
+              <div class="entity-stat">
+                <div class="entity-stat-val">${boundFields.length}</div>
+                <div class="entity-stat-lbl">Bound Fields</div>
+              </div>
+              <div class="entity-stat">
+                <div class="entity-stat-val">${list.is_active !== false ? '✓' : '✗'}</div>
+                <div class="entity-stat-lbl">Active</div>
+              </div>
+            </div>
+          </div>
+
+          ${boundFields.length > 0 ? `
+            <div class="rel-section">
+              <div class="rel-section-head">
+                <div class="rel-section-title">Bound Fields</div>
+              </div>
+              ${boundFields.map(b => `
+                <div class="rel-pill">
+                  <span>${b.field.name}</span>
+                  ${b.is_required ? '<span style="color: var(--red); font-size: 10px;">● Required</span>' : ''}
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+
+          <div class="list-values-table">
+            <div class="list-values-head">
+              <div>#</div>
+              <div>Value</div>
+              <div>Label</div>
+              <div>Actions</div>
+            </div>
+            ${values.map((v, idx) => `
+              <div class="list-values-row">
+                <div class="list-value-index">${idx + 1}</div>
+                <div class="list-value-main">${v}</div>
+                <div class="list-value-label">${v}</div>
+                <div class="field-actions-cell">
+                  <button class="field-action-btn delete" onclick="removeListValue('${listId}', ${idx})">Remove</button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+
+          <div style="margin-top: 18px; display: flex; gap: 10px; justify-content: center;">
+            <button class="btn" onclick="openAddValueModal('${listId}')">+ Add Value</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function openListModal(editId = null) {
+      const stdLists = records.StandardizedList || [];
+      const list = editId ? stdLists.find(l => l.id === editId) : null;
+      
+      const modal = document.createElement('div');
+      modal.className = 'modal-overlay';
+      modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+      
+      modal.innerHTML = `
+        <div class="modal-panel">
+          <div class="modal-head">
+            <div class="modal-title">${list ? 'Edit List' : 'New Standardized List'}</div>
+            <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>List Name *</label>
+              <input type="text" id="list-name" value="${list?.name || ''}" placeholder="e.g., currency_codes, security_types">
+              <div class="hint">Technical name (lowercase, underscores)</div>
+            </div>
+            <div class="form-group">
+              <label>Display Name</label>
+              <input type="text" id="list-display-name" value="${list?.display_name || ''}" placeholder="e.g., Currency Codes, Security Types">
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <textarea id="list-description" placeholder="What values does this list contain?" rows="2">${list?.description || ''}</textarea>
+            </div>
+            <div class="form-group">
+              <label>Values *</label>
+              <textarea id="list-values" placeholder="Enter values separated by commas&#10;e.g., USD,EUR,GBP,JPY" rows="6">${list?.values || ''}</textarea>
+              <div class="hint">Comma-separated values</div>
+            </div>
+            <div class="form-group">
+              <label class="form-check">
+                <input type="checkbox" id="list-is-active" ${list?.is_active !== false ? 'checked' : ''}>
+                <span class="form-check-label">Active</span>
+              </label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveList('${editId || ''}')">${list ? 'Update' : 'Create'}</button>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+    }
+
+    async function saveList(editId) {
+      const name = document.getElementById('list-name').value.trim();
+      const displayName = document.getElementById('list-display-name').value.trim();
+      const description = document.getElementById('list-description').value.trim();
+      const values = document.getElementById('list-values').value.trim();
+      const isActive = document.getElementById('list-is-active').checked;
+
+      if (!name || !values) {
+        alert('Name and values are required');
+        return;
+      }
+
+      const data = {
+        name,
+        display_name: displayName || name,
+        description,
+        values,
+        is_active: isActive,
+        created_at: new Date().toISOString()
+      };
+
+      try {
+        if (editId) {
+          await apiUpdateRecord('StandardizedList', editId, data);
+        } else {
+          await apiCreateRecord('StandardizedList', data);
+        }
+        document.querySelector('.modal-overlay').remove();
+        render();
+      } catch (err) {
+        alert('Failed to save list: ' + err.message);
+      }
+    }
+
+    async function deleteList(listId) {
+      if (!confirm('Delete this list? This will also remove all field bindings. This cannot be undone.')) return;
+      try {
+        // Remove all bindings first
+        const fieldBindings = records.FieldListBinding || [];
+        const bindings = fieldBindings.filter(b => b.list_id === listId);
+        for (const binding of bindings) {
+          await apiDeleteRecord('FieldListBinding', binding.id);
+        }
+        // Then remove the list
+        await apiDeleteRecord('StandardizedList', listId);
+        go('standardized-lists');
+      } catch (err) {
+        alert('Failed to delete list: ' + err.message);
+      }
+    }
+
+    function openAddValueModal(listId) {
+      const modal = document.createElement('div');
+      modal.className = 'modal-overlay';
+      modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+      
+      modal.innerHTML = `
+        <div class="modal-panel">
+          <div class="modal-head">
+            <div class="modal-title">Add Value</div>
+            <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>New Value *</label>
+              <input type="text" id="new-value" placeholder="Enter value">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+            <button class="btn btn-primary" onclick="addListValue('${listId}')">Add</button>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+    }
+
+    async function addListValue(listId) {
+      const newValue = document.getElementById('new-value').value.trim();
+      if (!newValue) {
+        alert('Value is required');
+        return;
+      }
+
+      const stdLists = records.StandardizedList || [];
+      const list = stdLists.find(l => l.id === listId);
+      if (!list) return;
+
+      const values = list.values ? list.values.split(',').map(v => v.trim()) : [];
+      if (values.includes(newValue)) {
+        alert('Value already exists');
+        return;
+      }
+
+      values.push(newValue);
+      const newValues = values.join(',');
+
+      try {
+        await apiUpdateRecord('StandardizedList', listId, { values: newValues });
+        document.querySelector('.modal-overlay').remove();
+        render();
+      } catch (err) {
+        alert('Failed to add value: ' + err.message);
+      }
+    }
+
+    async function removeListValue(listId, index) {
+      if (!confirm('Remove this value from the list?')) return;
+
+      const stdLists = records.StandardizedList || [];
+      const list = stdLists.find(l => l.id === listId);
+      if (!list) return;
+
+      const values = list.values ? list.values.split(',').map(v => v.trim()) : [];
+      values.splice(index, 1);
+      const newValues = values.join(',');
+
+      try {
+        await apiUpdateRecord('StandardizedList', listId, { values: newValues });
+        render();
+      } catch (err) {
+        alert('Failed to remove value: ' + err.message);
+      }
+    }
+
+    function openRelationshipModal(entityId) {
+      const schemaEntities = records.SchemaEntity || [];
+      const otherEntities = schemaEntities.filter(e => e.id !== entityId);
+      
+      const modal = document.createElement('div');
+      modal.className = 'modal-overlay';
+      modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+      
+      modal.innerHTML = `
+        <div class="modal-panel">
+          <div class="modal-head">
+            <div class="modal-title">Add Relationship</div>
+            <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Relationship Type</label>
+              <select id="rel-type">
+                <option value="parent">This entity has a parent</option>
+                <option value="child">This entity has a child</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Related Entity *</label>
+              <select id="rel-entity">
+                <option value="">— Select entity —</option>
+                ${otherEntities.map(e => `<option value="${e.id}">${e.display_name}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Cardinality</label>
+              <select id="rel-cardinality">
+                <option value="1:1">One to One (1:1)</option>
+                <option value="1:N" selected>One to Many (1:N)</option>
+                <option value="N:1">Many to One (N:1)</option>
+                <option value="N:M">Many to Many (N:M)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Foreign Key Field</label>
+              <input type="text" id="rel-fk-field" placeholder="e.g., fund_id, security_id">
+              <div class="hint">Field in this entity that references the related entity</div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveRelationship('${entityId}')">Create</button>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+    }
+
+    async function saveRelationship(entityId) {
+      const relType = document.getElementById('rel-type').value;
+      const relatedEntityId = document.getElementById('rel-entity').value;
+      const cardinality = document.getElementById('rel-cardinality').value;
+      const fkField = document.getElementById('rel-fk-field').value.trim();
+
+      if (!relatedEntityId) {
+        alert('Please select a related entity');
+        return;
+      }
+
+      const data = {
+        parent_entity_id: relType === 'parent' ? relatedEntityId : entityId,
+        child_entity_id: relType === 'parent' ? entityId : relatedEntityId,
+        relationship_type: relType,
+        cardinality,
+        foreign_key_field: fkField
+      };
+
+      try {
+        await apiCreateRecord('SchemaRelationship', data);
+        document.querySelector('.modal-overlay').remove();
+        render();
+      } catch (err) {
+        alert('Failed to create relationship: ' + err.message);
+      }
+    }
+
+    // ===== Template Editor =====
+    function renderTemplateSection(entityId, fields) {
+      const templates = (records.EntityTemplate || []).filter(t => t.entity_id === entityId);
+      const defaultTemplate = templates.find(t => t.is_default);
+
+      return `
+        <div class="template-section" style="margin-top: 28px;">
+          <div class="template-section-head">
+            <div class="template-section-name">Display Templates</div>
+            <button class="btn btn-sm" onclick="openTemplateEditor('${entityId}')">+ New Template</button>
+          </div>
+          ${templates.length > 0 ? templates.map(t => `
+            <div class="template-card" onclick="openTemplateEditor('${entityId}', '${t.id}')">
+              <div class="template-card-info">
+                <div class="template-card-name">
+                  ${t.name}
+                  ${t.is_default ? '<span class="template-default-badge">Default</span>' : ''}
+                </div>
+                <div class="template-card-meta">
+                  <span>v${t.version || 1}</span>
+                  <span>Updated ${t.updated_at ? new Date(t.updated_at).toLocaleDateString() : '—'}</span>
+                </div>
+              </div>
+              <div style="display: flex; gap: 6px;">
+                <button class="field-action-btn" onclick="event.stopPropagation(); openTemplateEditor('${entityId}', '${t.id}')">Edit</button>
+                <button class="field-action-btn delete" onclick="event.stopPropagation(); deleteTemplate('${t.id}')">Delete</button>
+              </div>
+            </div>
+          `).join('') : `
+            <div style="padding: 20px; text-align: center; color: var(--ink-4); font-size: 12px;">
+              No templates yet. Create one to control how records of this entity are displayed.
+            </div>
+          `}
+        </div>
+      `;
+    }
+
+    function openTemplateEditor(entityId, editId = null) {
+      const templates = records.EntityTemplate || [];
+      const template = editId ? templates.find(t => t.id === editId) : null;
+      const schemaEntities = records.SchemaEntity || [];
+      const schemaFields = records.SchemaField || [];
+      const entity = schemaEntities.find(e => e.id === entityId);
+      const fields = schemaFields.filter(f => f.entity_id === entityId).sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+
+      const defaultHtml = template?.html_content || generateDefaultTemplateHtml(entity, fields);
+
+      const modal = document.createElement('div');
+      modal.className = 'modal-overlay';
+      modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+
+      modal.innerHTML = `
+        <div class="modal-panel-wide">
+          <div class="modal-head">
+            <div class="modal-title">${template ? 'Edit Template' : 'New Template'} — ${entity?.display_name || entity?.name || ''}</div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <button class="btn btn-sm" onclick="previewTemplate()">Preview</button>
+              <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+            </div>
+          </div>
+          <div style="padding: 12px 16px; border-bottom: 1px solid var(--line);">
+            <div class="form-row-2" style="margin: 0;">
+              <div class="form-group" style="margin: 0;">
+                <label>Template Name</label>
+                <input type="text" id="template-name" value="${template?.name || 'Default Template'}" placeholder="e.g., Default View, Compact View">
+              </div>
+              <div class="form-group" style="margin: 0; display: flex; align-items: flex-end; gap: 12px;">
+                <label class="form-check" style="padding: 0;">
+                  <input type="checkbox" id="template-is-default" ${template?.is_default || !template ? 'checked' : ''}>
+                  <span class="form-check-label">Default template</span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="template-editor-panel">
+            <div class="template-editor-left">
+              <div class="template-editor-pane-head">
+                <span>HTML Template</span>
+                <span style="font-size: 10px; color: var(--ink-4); text-transform: none; letter-spacing: 0; font-weight: 400;">Use {{field_name}} placeholders</span>
+              </div>
+              <div class="template-field-chips">
+                ${fields.map(f => `<span class="template-field-chip" onclick="insertFieldPlaceholder('${f.name}')" title="Click to insert">{{${f.name}}}</span>`).join('')}
+              </div>
+              <textarea class="template-code-area" id="template-html" spellcheck="false">${escapeHtml(defaultHtml)}</textarea>
+              <div class="chat-panel">
+                <div class="chat-panel-head">
+                  <span>AI Template Designer</span>
+                  <span style="font-size: 10px; color: var(--ink-4); text-transform: none; letter-spacing: 0; font-weight: 400;">Powered by Heurisk Agent</span>
+                </div>
+                <div class="chat-messages" id="template-chat-messages">
+                  <div class="chat-msg system">Ask the agent to design a template. E.g. "Show key fields in a compact card layout"</div>
+                </div>
+                <div class="chat-input-row">
+                  <input type="text" id="template-chat-input" placeholder="Describe how you want records displayed..." onkeydown="if(event.key==='Enter')sendTemplateChat('${entityId}')">
+                  <button class="chat-send-btn" id="template-chat-send" onclick="sendTemplateChat('${entityId}')">Send</button>
+                </div>
+              </div>
+            </div>
+            <div class="template-editor-right">
+              <div class="template-editor-pane-head">
+                <span>Live Preview</span>
+              </div>
+              <div class="template-preview-area" id="template-preview">
+                <div style="color: var(--ink-4); font-size: 12px; text-align: center; padding: 40px;">
+                  Preview will appear here as you type
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveTemplate('${entityId}', '${editId || ''}')">${template ? 'Update' : 'Create'}</button>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(modal);
+
+      // Live preview on input
+      const textarea = document.getElementById('template-html');
+      textarea.addEventListener('input', () => updateTemplatePreview(entity, fields));
+      updateTemplatePreview(entity, fields);
+    }
+
+    function generateDefaultTemplateHtml(entity, fields) {
+      if (!entity || fields.length === 0) {
+        return `<div class="record-card">
+  <h2>{{name}}</h2>
+  <p>No fields defined yet</p>
+</div>`;
+      }
+
+      const keyFields = fields.slice(0, 6);
+      const lines = keyFields.map(f =>
+        `  <div class="field"><span class="label">${f.display_name || f.name}</span><span class="value">{{${f.name}}}</span></div>`
+      ).join('\n');
+
+      return `<div class="record-card">
+  <div class="header">
+    <h2>{{${fields[0]?.name || 'name'}}}</h2>
+    <span class="badge">{{status}}</span>
+  </div>
+  <div class="fields">
+${lines}
+  </div>
+</div>`;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function insertFieldPlaceholder(fieldName) {
+      const textarea = document.getElementById('template-html');
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const text = textarea.value;
+      const placeholder = `{{${fieldName}}}`;
+      textarea.value = text.substring(0, start) + placeholder + text.substring(end);
+      textarea.selectionStart = textarea.selectionEnd = start + placeholder.length;
+      textarea.focus();
+      textarea.dispatchEvent(new Event('input'));
+    }
+
+    function updateTemplatePreview(entity, fields) {
+      const html = document.getElementById('template-html').value;
+      const preview = document.getElementById('template-preview');
+
+      // Create sample data
+      const sampleData = {};
+      fields.forEach(f => {
+        if (f.field_type === 'number') sampleData[f.name] = (Math.random() * 1000).toFixed(2);
+        else if (f.field_type === 'boolean') sampleData[f.name] = Math.random() > 0.5 ? 'Yes' : 'No';
+        else if (f.field_type === 'date') sampleData[f.name] = '2026-09-11';
+        else sampleData[f.name] = `Sample ${f.display_name || f.name}`;
+      });
+      sampleData.id = 'rec-abc123';
+      sampleData.status = 'Active';
+      sampleData.name = entity?.display_name || 'Sample Record';
+
+      // Replace placeholders
+      let rendered = html.replace(/\{\{(\w+)\}\}/g, (match, key) => {
+        return sampleData[key] !== undefined ? sampleData[key] : `<em style="color:var(--red);">[${key}]</em>`;
+      });
+
+      // Wrap in styled preview
+      preview.innerHTML = `
+        <style>
+          .preview-record-card { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+          .preview-record-card .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+          .preview-record-card h2 { font-family: Georgia, serif; font-size: 18px; margin: 0; color: var(--ink); }
+          .preview-record-card .badge { padding: 3px 10px; background: #e1f1e7; color: var(--green); font-size: 10px; font-weight: 600; text-transform: uppercase; }
+          .preview-record-card .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+          .preview-record-card .field { display: flex; flex-direction: column; gap: 2px; }
+          .preview-record-card .label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--ink-3); font-weight: 600; }
+          .preview-record-card .value { font-size: 13px; color: var(--ink); }
+        </style>
+        <div class="preview-record-card">${rendered}</div>
+      `;
+    }
+
+    async function previewTemplate() {
+      const textarea = document.getElementById('template-html');
+      textarea.dispatchEvent(new Event('input'));
+    }
+
+    async function sendTemplateChat(entityId) {
+      const input = document.getElementById('template-chat-input');
+      const sendBtn = document.getElementById('template-chat-send');
+      const messages = document.getElementById('template-chat-messages');
+      const textarea = document.getElementById('template-html');
+
+      const prompt = input.value.trim();
+      if (!prompt) return;
+
+      // Add user message
+      messages.innerHTML += `<div class="chat-msg user">${prompt}</div>`;
+      input.value = '';
+      sendBtn.disabled = true;
+      sendBtn.textContent = '...';
+      messages.scrollTop = messages.scrollHeight;
+
+      // Build context for agent
+      const schemaFields = records.SchemaField || [];
+      const fields = schemaFields.filter(f => f.entity_id === entityId);
+      const fieldList = fields.map(f => `${f.name} (${f.field_type || 'string'})`).join(', ');
+      const currentHtml = textarea.value;
+
+      const agentPrompt = `You are designing an HTML display template for a record. The entity has these fields: ${fieldList}.
+
+Current template HTML:
+${currentHtml}
+
+User request: ${prompt}
+
+Respond with ONLY the updated HTML template. Use {{field_name}} placeholders for field values. Keep the HTML clean and semantic. Do not include any explanation — just return the HTML.`;
+
+      try {
+        const response = await apiCallAgent('template-designer', agentPrompt, { entityId, fields: fieldList });
+        // Extract HTML from response (strip markdown code blocks if present)
+        let html = response.trim();
+        const codeBlockMatch = html.match(/```(?:html)?\s*([\s\S]*?)```/);
+        if (codeBlockMatch) html = codeBlockMatch[1].trim();
+
+        textarea.value = html;
+        textarea.dispatchEvent(new Event('input'));
+
+        messages.innerHTML += `<div class="chat-msg agent">Template updated. Check the preview →</div>`;
+      } catch (err) {
+        messages.innerHTML += `<div class="chat-msg agent" style="color: var(--red);">Agent unavailable: ${err.message}. Try describing your template manually using the field chips above.</div>`;
+      }
+
+      sendBtn.disabled = false;
+      sendBtn.textContent = 'Send';
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    async function saveTemplate(entityId, editId) {
+      const name = document.getElementById('template-name').value.trim();
+      const htmlContent = document.getElementById('template-html').value;
+      const isDefault = document.getElementById('template-is-default').checked;
+
+      if (!name) {
+        alert('Template name is required');
+        return;
+      }
+
+      const templates = records.EntityTemplate || [];
+      const existing = editId ? templates.find(t => t.id === editId) : null;
+
+      // Get field order from placeholders
+      const placeholders = [...htmlContent.matchAll(/\{\{(\w+)\}\}/g)].map(m => m[1]);
+      const fieldOrder = [...new Set(placeholders)].join(',');
+
+      const data = {
+        entity_id: entityId,
+        name,
+        html_content: htmlContent,
+        field_order: fieldOrder,
+        is_default: isDefault,
+        version: (existing?.version || 0) + 1,
+        updated_at: new Date().toISOString()
+      };
+
+      try {
+        // If setting as default, unset other defaults
+        if (isDefault) {
+          const otherDefaults = templates.filter(t => t.entity_id === entityId && t.is_default && t.id !== editId);
+          for (const other of otherDefaults) {
+            await apiUpdateRecord('EntityTemplate', other.id, { is_default: false });
+          }
+        }
+
+        if (editId) {
+          data.created_at = existing.created_at;
+          await apiUpdateRecord('EntityTemplate', editId, data);
+        } else {
+          data.created_at = new Date().toISOString();
+          await apiCreateRecord('EntityTemplate', data);
+        }
+        document.querySelector('.modal-overlay').remove();
+        render();
+      } catch (err) {
+        alert('Failed to save template: ' + err.message);
+      }
+    }
+
+    async function deleteTemplate(templateId) {
+      if (!confirm('Delete this template?')) return;
+      try {
+        await apiDeleteRecord('EntityTemplate', templateId);
+        render();
+      } catch (err) {
+        alert('Failed to delete template: ' + err.message);
+      }
+    }
+
+    // ===== Unified Grid View =====
+    function renderUnifiedGrid() {
+      const schemaEntities = records.SchemaEntity || [];
+      const selectedEntity = state.gridEntity || 'all';
+      const selectedDate = state.gridDate || '';
+      const searchText = state.gridSearch || '';
+
+      // Collect all records across entities
+      let allRows = [];
+      const entityNames = selectedEntity === 'all'
+        ? Object.keys(records).filter(k => !['SchemaEntity','SchemaField','SchemaRelationship','ExpressionColumn','StandardizedList','FieldListBinding','LinkType','RecordLink','EntityTemplate','PrecedenceRule','DQException','DataSource','FieldLineage'].includes(k))
+        : [selectedEntity];
+
+      for (const entityName of entityNames) {
+        const recs = records[entityName] || [];
+        for (const rec of recs) {
+          // Get knowledge date from various possible fields
+          const knowledgeDate = rec.knowledge_date || rec.valid_from || rec.reporting_date || rec.as_of_date || rec.date || '';
+          const systemDate = rec.system_date || rec.created_at || rec.updated_at || '';
+          const name = rec.name || rec.legal_name || rec.display_name || rec.title || rec.id?.substring(0, 8) || '—';
+          const status = rec.status || 'active';
+
+          allRows.push({
+            entityName,
+            record: rec,
+            knowledgeDate,
+            systemDate,
+            name,
+            status
+          });
+        }
+      }
+
+      // Filter by date
+      if (selectedDate) {
+        allRows = allRows.filter(r => {
+          if (!r.knowledgeDate) return false;
+          const kd = r.knowledgeDate.substring(0, 10); // YYYY-MM-DD
+          return kd === selectedDate || kd <= selectedDate;
+        });
+      }
+
+      // Filter by search
+      if (searchText) {
+        const q = searchText.toLowerCase();
+        allRows = allRows.filter(r =>
+          r.name.toLowerCase().includes(q) ||
+          r.entityName.toLowerCase().includes(q) ||
+          r.record.id?.toLowerCase().includes(q)
+        );
+      }
+
+      // Sort by knowledge date desc
+      allRows.sort((a, b) => (b.knowledgeDate || '').localeCompare(a.knowledgeDate || ''));
+
+      const entityColors = {
+        Fund: 'var(--accent)',
+        Issuer: 'var(--accent-2)',
+        Security: 'var(--gold)',
+        Position: 'var(--green)',
+      };
+
+      return `
+        <div class="view-fade">
+          <div class="crumbs">
+            <span class="crumb-link" onclick="go('landing')">Home</span>
+            <span class="sep">›</span>
+            <span class="crumb-current">Data Grid</span>
+          </div>
+
+          <div class="page-header">
+            <div>
+              <div class="page-title">Unified Data Grid</div>
+              <div class="page-meta">All entities · filterable by knowledge date</div>
+            </div>
+            <div class="page-actions">
+              <button class="btn">Export CSV</button>
+            </div>
+          </div>
+
+          <div class="grid-toolbar">
+            <div class="grid-toolbar-label">Entity</div>
+            <select class="grid-entity-select" onchange="state.gridEntity = this.value; render()">
+              <option value="all" ${selectedEntity === 'all' ? 'selected' : ''}>All Entities</option>
+              ${entityNames.map(n => `<option value="${n}" ${selectedEntity === n ? 'selected' : ''}>${n}</option>`).join('')}
+            </select>
+
+            <div class="grid-toolbar-label" style="margin-left: 12px;">Knowledge Date</div>
+            <input type="date" class="grid-date-input" value="${selectedDate}" onchange="state.gridDate = this.value; render()">
+            ${selectedDate ? `<button class="btn btn-sm" onclick="state.gridDate = ''; render();">Clear Date</button>` : ''}
+
+            <input type="text" class="grid-search-input" placeholder="Search records..." value="${searchText}" oninput="state.gridSearch = this.value; render()">
+
+            <div class="grid-count">Showing <strong>${allRows.length}</strong> records</div>
+          </div>
+
+          <div class="unified-grid-table">
+            <div class="ug-head" style="grid-template-columns: 110px 1.5fr 130px 130px 90px 1fr 80px;">
+              <div>Entity</div>
+              <div>Name</div>
+              <div>Knowledge Date</div>
+              <div>System Date</div>
+              <div>Status</div>
+              <div>ID</div>
+              <div style="text-align: right;">Action</div>
+            </div>
+            ${allRows.length > 0 ? allRows.slice(0, 200).map(r => `
+              <div class="ug-row" style="grid-template-columns: 110px 1.5fr 130px 130px 90px 1fr 80px;">
+                <div>
+                  <span class="ug-entity-badge" style="border-color: ${entityColors[r.entityName] || 'var(--ink-4)'}; color: ${entityColors[r.entityName] || 'var(--ink-3)'};">${r.entityName}</span>
+                </div>
+                <div style="font-weight: 500; color: var(--ink);">${r.name}</div>
+                <div class="ug-date-cell">${r.knowledgeDate ? r.knowledgeDate.substring(0, 10) : '—'}</div>
+                <div class="ug-date-cell">${r.systemDate ? r.systemDate.substring(0, 10) : '—'}</div>
+                <div><span class="status-chip active" style="font-size: 9px;">● ${r.status}</span></div>
+                <div class="row-id">${r.record.id?.substring(0, 12) || '—'}</div>
+                <div style="text-align: right;">
+                  <button class="field-action-btn" onclick="go('record-detail', {entity: '${r.entityName}', recordId: '${r.record.id}'})">View</button>
+                </div>
+              </div>
+            `).join('') : `
+              <div style="padding: 60px 28px; text-align: center; color: var(--ink-3); grid-column: 1 / -1;">
+                <div style="font-size: 36px; margin-bottom: 12px;">📊</div>
+                <div style="font-size: 14px; font-weight: 500; color: var(--ink-2); margin-bottom: 6px;">No records found</div>
+                <div style="font-size: 12px;">Try adjusting your filters or adding data through the Heurisk platform.</div>
+              </div>
+            `}
           </div>
         </div>
       `;
