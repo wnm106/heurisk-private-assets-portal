@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-11T17:58:39.865Z",
+  "mode": "open",
+  "baseExportHash": null,
+  "validation": {
+    "errors": 0,
+    "proposals": 0,
+    "warnings": 1
+  },
+  "changes": [
+    {
+      "path": "heurisk.config.json",
+      "status": "added",
+      "bytes": 1813
+    },
+    {
+      "path": "src/components/app/component.json",
+      "status": "added",
+      "bytes": 199
+    },
+    {
+      "path": "src/components/app/template.html",
+      "status": "added",
+      "bytes": 170010
+    },
+    {
+      "path": "src/contracts/app-contract.json",
+      "status": "added",
+      "bytes": 759
+    },
+    {
+      "path": "src/data/entities.json",
+      "status": "added",
+      "bytes": 4666
+    },
+    {
+      "path": "src/data/environments.json",
+      "status": "added",
+      "bytes": 393
+    },
+    {
+      "path": "src/data/schema-migrations.json",
+      "status": "added",
+      "bytes": 47
+    }
+  ],
+  "proposals": []
+}
