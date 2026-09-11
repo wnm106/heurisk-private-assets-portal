@@ -1535,6 +1535,10 @@
         
         const initPromise = (async () => {
           entities = await initEntities();
+          if (!entities || typeof entities !== 'object') {
+            console.log('initEntities returned no data:', entities);
+            return;
+          }
           for (const name of Object.keys(entities)) {
             records[name] = await apiFetchRecords(name);
           }
