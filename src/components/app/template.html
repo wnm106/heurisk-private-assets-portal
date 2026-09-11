@@ -1437,33 +1437,7 @@
 </style>
 </head>
 <body>
-<div class="main" id="app">
-    <div class="view-fade">
-      <div class="crumbs">
-        <span class="crumb-current">Home</span>
-      </div>
-      <div class="page-header">
-        <div class="page-title-block">
-          <div style="width: 4px; height: 48px; background: var(--accent);"></div>
-          <div>
-            <div class="page-title">Welcome to Meridian MDM</div>
-            <div class="page-meta">Financial Master Data Management Platform</div>
-          </div>
-        </div>
-      </div>
-      <div style="padding: 60px 28px; text-align: center;">
-        <div style="font-size: 48px; margin-bottom: 16px;">📊</div>
-        <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px; color: var(--ink-2);">No Data Available</div>
-        <div style="color: var(--ink-3); max-width: 500px; margin: 0 auto; line-height: 1.6;">
-          This application is ready to manage your financial master data. 
-          To get started, add entities and records through the Heurisk platform, 
-          or contact your administrator to configure data sources.
-        </div>
-      </div>
-    </div>
-  </div>
-
-<div class="topbar">
+  <div class="topbar">
     <div class="brand">
       <div class="brand-mark">M</div>
       <div class="brand-text">Meridian</div>
@@ -1494,6 +1468,8 @@
     <div class="legend-item"><span class="legend-swatch src-bg-derived"></span>Derived</div>
     <div class="legend-sync">Last sync: <strong>2 min ago</strong></div>
   </div>
+
+  <div class="main" id="app"></div>
 <script>
     let entities = {};
     let records = {};
@@ -1528,10 +1504,13 @@
           <div style="padding: 60px 28px; text-align: center;">
             <div style="font-size: 48px; margin-bottom: 16px;">📊</div>
             <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px; color: var(--ink-2);">No Data Available</div>
-            <div style="color: var(--ink-3); max-width: 500px; margin: 0 auto; line-height: 1.6;">
+            <div style="color: var(--ink-3); max-width: 500px; margin: 0 auto 24px; line-height: 1.6;">
               This application is ready to manage your financial master data. 
-              To get started, add entities and records through the Heurisk platform, 
-              or contact your administrator to configure data sources.
+              To get started, design your schema or browse the data grid.
+            </div>
+            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+              <button class="btn btn-primary" onclick="go('schema-builder')">Open Schema Builder</button>
+              <button class="btn" onclick="go('grid-view')">View Data Grid</button>
             </div>
           </div>
         </div>
@@ -1612,9 +1591,7 @@
 
     function fmt$(n) {
       if (n == null) return '—';
-      return '
-</html>
- + Number(n).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+      return '$' + Number(n).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
     }
 
     function qualityColor(q) {
